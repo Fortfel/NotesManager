@@ -1,0 +1,47 @@
+@import '@workspace/tailwind-config/style.css';
+
+@import '@fontsource-variable/inter';
+@import '@fontsource-variable/jetbrains-mono';
+@import '@fontsource-variable/source-serif-4';
+
+/**
+ * This is necessary to load the @repo/ui package when moving from
+ * @tailwindcss/vite v4.0.7 to v4.0.8.
+ *
+ * For more details, see:
+ * https://github.com/tailwindlabs/tailwindcss/issues/16733
+ */
+/* Add sources here, u can use single components */
+@source "../../../packages/ui/src/**/*.{ts,tsx}";
+
+/*@import '@fontsource/inter/700.css';*/
+
+/*@plugin "@tailwindcss/typography";*/
+/*@plugin "@tailwindcss/forms" {*/
+/*  !* only generate global styles *!*/
+/*  !*strategy: base;*!*/
+/*  !* only generate classes *!*/
+/*  !*strategy: class;*!*/
+/*}*/
+
+:root {
+  --font-sans: 'Inter Variable', sans-serif;
+  --font-serif: 'Source Serif 4 Variable', serif;
+  --font-mono: 'JetBrains Mono Variable', monospace;
+}
+
+.dark {
+  --font-sans: 'Inter Variable', sans-serif;
+  --font-serif: 'Source Serif 4 Variable', serif;
+  --font-mono: 'JetBrains Mono Variable', monospace;
+}
+
+@theme inline {
+  --font-sans: var(--font-sans);
+  --font-mono: var(--font-mono);
+  --font-serif: var(--font-serif);
+}
+
+/*background-image: repeating-linear-gradient(-45deg, hsl(240 10% 3.9%), hsl(240 3.7% 15.9%) 1px, hsl(240 10% 3.9%) 1px, hsl(240 10% 3.9%) 8px);*/
+/*background-image: repeating-linear-gradient(-45deg, hsl(0 0% 100%), hsl(240 5.9% 90%) 1px, hsl(0 0% 100%) 1px, hsl(0 0% 100%) 8px);*/
+/*grid-template-columns: repeat(auto-fit, minmax(min(10rem, 100%), 1fr));*/

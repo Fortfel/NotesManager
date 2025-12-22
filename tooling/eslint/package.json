@@ -1,0 +1,43 @@
+{
+  "name": "@workspace/eslint-config",
+  "type": "module",
+  "private": true,
+  "exports": {
+    "./base": "./base.js",
+    "./react": "./react.js",
+    "./vite-react": "./vite-react.js"
+  },
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "format": "prettier --check . --ignore-path ../../.gitignore --ignore-path .prettierignore"
+  },
+  "dependencies": {
+    "@eslint/js": "catalog:",
+    "@tanstack/eslint-plugin-query": "catalog:",
+    "@tanstack/eslint-plugin-router": "catalog:",
+    "eslint": "catalog:",
+    "eslint-config-prettier": "catalog:",
+    "eslint-config-turbo": "catalog:",
+    "eslint-import-resolver-typescript": "catalog:",
+    "eslint-plugin-drizzle": "catalog:",
+    "eslint-plugin-import": "catalog:",
+    "eslint-plugin-jsx-a11y": "catalog:",
+    "eslint-plugin-react": "catalog:",
+    "eslint-plugin-react-compiler": "catalog:",
+    "eslint-plugin-react-hooks": "catalog:",
+    "eslint-plugin-react-refresh": "catalog:",
+    "eslint-plugin-tsdoc": "catalog:",
+    "eslint-plugin-turbo": "catalog:",
+    "eslint-plugin-unicorn": "catalog:",
+    "globals": "catalog:",
+    "typescript-eslint": "catalog:"
+  },
+  "devDependencies": {
+    "@types/eslint-plugin-jsx-a11y": "catalog:",
+    "@workspace/prettier-config": "workspace:*",
+    "@workspace/typescript-config": "workspace:*",
+    "prettier": "catalog:",
+    "typescript": "catalog:"
+  },
+  "prettier": "@workspace/prettier-config"
+}

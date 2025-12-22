@@ -1,0 +1,82 @@
+{
+  "$schema": "https://turborepo.com/schema.json",
+  "ui": "tui",
+  "globalEnv": [
+    "NODE_ENV",
+    "SERVER_PORT",
+    "SERVER_URL",
+    "SERVER_API_PATH",
+    "CLIENT_URL",
+    "DATABASE_URL",
+    "AUTH_SECRET",
+    "AUTH_GOOGLE_CLIENT_ID",
+    "AUTH_GOOGLE_CLIENT_SECRET",
+    "AUTH_DISCORD_CLIENT_ID",
+    "AUTH_DISCORD_CLIENT_SECRET",
+    "AUTH_GITHUB_CLIENT_SECRET",
+    "AUTH_GITHUB_CLIENT_SECRET",
+    "RATE_LIMIT_MAX",
+    "RATE_LIMIT_WINDOW",
+    "CORS_ORIGIN"
+  ],
+  "globalPassThroughEnv": ["CI", "npm_lifecycle_event"],
+  "tasks": {
+    "transit": {
+      "dependsOn": ["^transit"]
+    },
+    "build": {
+      "dependsOn": ["db:generate", "^build"],
+      "inputs": ["$TURBO_DEFAULT$", ".env*"],
+      "outputs": [".cache/tsbuildinfo.json", "dist/**"]
+    },
+    "dev": {
+      "dependsOn": ["^dev"],
+      "cache": false,
+      "persistent": false
+    },
+    "start": {
+      "dependsOn": ["^build"]
+    },
+    "lint": {
+      "dependsOn": ["transit", "^build"],
+      "outputs": [".cache/.eslintcache"]
+    },
+    "typecheck": {
+      "dependsOn": ["transit", "^build"],
+      "outputs": [".cache/tsbuildinfo.json"]
+    },
+    "format": {
+      "outputs": [".cache/.prettiercache"],
+      "outputLogs": "new-only"
+    },
+    "auth:schema:generate": {
+      "cache": false,
+      "interactive": true
+    },
+    "//#docs": {
+      "dependsOn": [],
+      "outputs": ["docs/**"]
+    },
+    "db:generate": {
+      "cache": false
+    },
+    "db:migrate": {
+      "cache": false
+    },
+    "db:push": {
+      "cache": false,
+      "interactive": true
+    },
+    "db:seed": {
+      "cache": false
+    },
+    "db:studio": {
+      "cache": false,
+      "persistent": true
+    },
+    "ui-add": {
+      "cache": false,
+      "interactive": true
+    }
+  }
+}

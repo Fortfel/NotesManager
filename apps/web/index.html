@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script>
+      ;(() => {
+        /*
+         * Avoid flickering white screen when refreshing on initial page load
+         */
+        const themes = ['light', 'dark']
+        const darkThemes = ['dark']
+        const storedTheme = localStorage.getItem('app-theme')
+        let resolvedTheme
+
+        if (storedTheme === 'system' || !storedTheme) {
+          const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches
+          resolvedTheme = prefersDark ? 'dark' : 'light'
+        } else if (themes.includes(storedTheme)) {
+          resolvedTheme = storedTheme
+        } else {
+          resolvedTheme = 'light'
+        }
+
+        const isDarkTheme = darkThemes.includes(resolvedTheme)
+
+        document.documentElement.classList.add(resolvedTheme)
+        document.documentElement.style.colorScheme = isDarkTheme ? 'dark' : 'light'
+      })()
+    </script>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>

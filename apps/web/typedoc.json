@@ -1,0 +1,6 @@
+{
+  "$schema": "https://typedoc.org/schema.json",
+  "entryPoints": ["./src/**"],
+  "includeVersion": true,
+  "exclude": ["./src/routeTree.gen.ts", "./src/vite-env.d.ts"]
+}

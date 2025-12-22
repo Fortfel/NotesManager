@@ -1,0 +1,42 @@
+{
+  "name": "monorepo",
+  "private": true,
+  "scripts": {
+    "build": "turbo run build",
+    "dev": "turbo watch dev --continue",
+    "start": "turbo run start",
+    "db:generate": "turbo run db:generate",
+    "db:migrate": "turbo run db:migrate",
+    "db:push": "turbo run db:push",
+    "db:seed": "turbo run db:seed",
+    "db:studio": "turbo run db:studio",
+    "auth:schema:generate": "turbo run auth:schema:generate",
+    "postauth:schema:generate": "echo NOTE: you will also need to fix styles and db:push your new schema",
+    "lint": "turbo run lint --continue -- --cache --cache-location .cache/.eslintcache",
+    "lint:fix": "turbo run lint --continue -- --fix --cache --cache-location .cache/.eslintcache",
+    "typecheck": "turbo run typecheck",
+    "format": "turbo run format --continue -- --cache --cache-location .cache/.prettiercache",
+    "format:fix": "turbo run format --continue -- --write --cache --cache-location .cache/.prettiercache",
+    "docs": "typedoc",
+    "clean": "rimraf --glob **/node_modules **/.cache **/dist **/build **/.turbo **/package-lock.json **/pnpm-lock.yaml **/yarn.lock",
+    "clean:cache": "rimraf --glob **/.cache **/.turbo",
+    "clean:build": "rimraf --glob **/dist **/build",
+    "ui-add": "turbo run ui-add -F web --"
+  },
+  "//comment": "We added '@ianvs/prettier-plugin-sort-imports' and 'prettier-plugin-tailwindcss' here in devDependencies for the Webstorm to work with Prettier.",
+  "devDependencies": {
+    "@ianvs/prettier-plugin-sort-imports": "^4.7.0",
+    "@workspace/prettier-config": "workspace:*",
+    "prettier": "catalog:",
+    "prettier-plugin-tailwindcss": "^0.6.14",
+    "rimraf": "^6.0.1",
+    "turbo": "^2.5.8",
+    "typedoc": "^0.28.14",
+    "typescript": "catalog:"
+  },
+  "packageManager": "pnpm@10.17.1",
+  "engines": {
+    "node": ">=20.12.0"
+  },
+  "prettier": "@workspace/prettier-config"
+}

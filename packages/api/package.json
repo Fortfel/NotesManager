@@ -1,0 +1,48 @@
+{
+  "name": "@workspace/api",
+  "type": "module",
+  "private": true,
+  "exports": {
+    "./client": {
+      "types": "./dist/client/index.d.ts",
+      "default": "./src/client/index.ts"
+    },
+    "./server": {
+      "types": "./dist/server/index.d.ts",
+      "default": "./src/server/index.ts"
+    }
+  },
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc",
+    "lint": "eslint . --max-warnings 0",
+    "typecheck": "tsc --noEmit",
+    "format": "prettier --check . --ignore-path ../../.gitignore --ignore-path .prettierignore"
+  },
+  "dependencies": {
+    "@trpc/client": "catalog:",
+    "@trpc/server": "catalog:",
+    "@trpc/tanstack-react-query": "catalog:",
+    "@workspace/auth": "workspace:*",
+    "@workspace/db": "workspace:*",
+    "@workspace/validators": "workspace:*",
+    "superjson": "catalog:",
+    "url-join": "catalog:",
+    "zod": "catalog:"
+  },
+  "devDependencies": {
+    "@types/react": "catalog:react19",
+    "@workspace/eslint-config": "workspace:*",
+    "@workspace/prettier-config": "workspace:*",
+    "@workspace/typescript-config": "workspace:*",
+    "eslint": "catalog:",
+    "prettier": "catalog:",
+    "typescript": "catalog:"
+  },
+  "//comment": "Need this peers for correct types inference when building types",
+  "peerDependencies": {
+    "@tanstack/react-query": "catalog:",
+    "fastify": "catalog:"
+  },
+  "prettier": "@workspace/prettier-config"
+}
