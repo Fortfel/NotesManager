@@ -61,7 +61,13 @@ const ResetPasswordForm = ({ className, ...props }: React.ComponentProps<'div'>)
           <FieldGroup>
             <form.AppField name="email">
               {(field) => (
-                <field.EmailField label="Email" placeholder="Enter your email" autoComplete="email" required />
+                  <field.TextField
+                      type="email"
+                      label="Email"
+                      placeholder="Enter your email"
+                      autoComplete="email"
+                      required
+                  />
               )}
             </form.AppField>
 

@@ -1,5 +1,5 @@
 {
-  "name": "monorepo",
+  "name": "notes-manager",
   "private": true,
   "scripts": {
     "build": "turbo run build",
