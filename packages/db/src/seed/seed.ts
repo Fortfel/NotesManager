@@ -1,3 +1,4 @@
+import crypto from 'node:crypto'
 import { reset, seed } from 'drizzle-seed'
 
 import { env } from '../../../../apps/fastify/src/env'
@@ -5,7 +6,7 @@ import { initAuth } from '../../../auth/src/server'
 import { createDatabase } from '../client'
 import * as schema from '../schema'
 import { account as accountTable, user as userTable } from '../schemas/auth'
-import { post as postTable } from '../schemas/posts'
+import { node as nodeTable, page as pageTable } from '../schemas/notes'
 import { initUsersData, messages } from './initial-users-data'
 
 const main = async (): Promise<void> => {
@@ -33,12 +34,13 @@ const main = async (): Promise<void> => {
     console.log('🗑️  Resetting database...')
     await reset(db, schema)
 
-    // Seed users with posts using drizzle-seed's 'with' feature
-    console.log('🌱 Seeding users with posts...')
+    // Seed users with pages and nodes using drizzle-seed's 'with' feature
+    console.log('🌱 Seeding users with pages...')
     await seed(db, {
       user: userTable,
       account: accountTable,
-      post: postTable,
+      page: pageTable,
+      node: nodeTable,
     }).refine((funcs) => ({
       user: {
         count: initUsersData.length,
@@ -53,7 +55,7 @@ const main = async (): Promise<void> => {
         },
         with: {
           account: 1,
-          post: [
+          page: [
             {
               weight: 1,
               count: [1, 2, 3],
@@ -73,10 +75,28 @@ const main = async (): Promise<void> => {
           }),
         },
       },
-      post: {
+      page: {
         columns: {
+          id: funcs.uuid(),
+          slug: funcs.uuid(),
           title: funcs.loremIpsum({ sentencesCount: 1 }),
-          content: funcs.valuesFromArray({ values: messages }),
+          cover: funcs.default({ defaultValue: '' }),
+        },
+        with: {
+          node: [
+            {
+              weight: 1,
+              count: [2, 5],
+            },
+          ],
+        },
+      },
+      node: {
+        columns: {
+          id: funcs.uuid(),
+          type: funcs.valuesFromArray({ values: ['text', 'heading1', 'heading2'] }),
+          value: funcs.valuesFromArray({ values: messages }),
+          order: funcs.int({ minValue: 0, maxValue: 100 }),
         },
       },
     }))
@@ -93,11 +113,23 @@ const main = async (): Promise<void> => {
         },
       })
 
-      // Add a post for the test user
-      await db.insert(postTable).values({
-        title: 'Welcome to my test account',
-        content: 'This is a demo post from the test account.',
+      // Add some pages for the test user
+      const pageId = crypto.randomUUID()
+      await db.insert(pageTable).values({
+        id: pageId,
+        slug: 'demo-page',
+        title: 'Demo Page',
+        cover: '',
         userId: testUser.user.id,
+      })
+
+      // Add some notes for the test user
+      await db.insert(nodeTable).values({
+        id: crypto.randomUUID(),
+        type: 'text',
+        value: 'This is a demo note from the test account.',
+        order: 1,
+        pageId: pageId,
       })
 
       console.log('✅ Test account created successfully')
@@ -110,7 +142,7 @@ const main = async (): Promise<void> => {
     console.log(`   - ${initUsersData.length.toString()} users created`)
     console.log(`   - ${initUsersData.length.toString()} accounts created`)
     console.log('   - 1 test account (demo@example.com / secret)')
-    console.log('   - ~101 posts created')
+    console.log('   - pages and nodes created')
   } catch (error) {
     console.error('❌ Error during seeding:', error)
     throw error

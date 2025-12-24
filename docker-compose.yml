@@ -3,10 +3,10 @@ version: '3.8'
 services:
   mysql:
     image: mysql:8.0.42
-    container_name: drizzle-mysql
+    container_name: NotesManager
     environment:
       MYSQL_ROOT_PASSWORD: secret
-      MYSQL_DATABASE: drizzle
+      MYSQL_DATABASE: notes_manager
       MYSQL_USER: admin
       MYSQL_PASSWORD: admin
     ports:

@@ -1,13 +1,3 @@
-CREATE TABLE `post` (
-	`id` int AUTO_INCREMENT NOT NULL,
-	`title` varchar(256) NOT NULL,
-	`content` text NOT NULL,
-	`created_at` timestamp NOT NULL DEFAULT (now()),
-	`updated_at` timestamp NOT NULL DEFAULT (now()) ON UPDATE CURRENT_TIMESTAMP,
-	`user_id` varchar(36) NOT NULL,
-	CONSTRAINT `post_id` PRIMARY KEY(`id`)
-);
---> statement-breakpoint
 CREATE TABLE `account` (
 	`id` varchar(36) NOT NULL,
 	`account_id` text NOT NULL,
@@ -60,6 +50,30 @@ CREATE TABLE `verification` (
 	CONSTRAINT `verification_id` PRIMARY KEY(`id`)
 );
 --> statement-breakpoint
-ALTER TABLE `post` ADD CONSTRAINT `post_user_id_user_id_fk` FOREIGN KEY (`user_id`) REFERENCES `user`(`id`) ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
+CREATE TABLE `node` (
+	`id` varchar(36) NOT NULL,
+	`type` varchar(20) NOT NULL,
+	`value` text NOT NULL,
+	`order` int NOT NULL,
+	`created_at` timestamp NOT NULL DEFAULT (now()),
+	`updated_at` timestamp NOT NULL DEFAULT (now()) ON UPDATE CURRENT_TIMESTAMP,
+	`page_id` varchar(36) NOT NULL,
+	CONSTRAINT `node_id` PRIMARY KEY(`id`)
+);
+--> statement-breakpoint
+CREATE TABLE `page` (
+	`id` varchar(36) NOT NULL,
+	`slug` varchar(256) NOT NULL,
+	`title` varchar(256) NOT NULL,
+	`cover` text,
+	`created_at` timestamp NOT NULL DEFAULT (now()),
+	`updated_at` timestamp NOT NULL DEFAULT (now()) ON UPDATE CURRENT_TIMESTAMP,
+	`user_id` varchar(36) NOT NULL,
+	CONSTRAINT `page_id` PRIMARY KEY(`id`),
+	CONSTRAINT `page_slug_unique` UNIQUE(`slug`)
+);
+--> statement-breakpoint
 ALTER TABLE `account` ADD CONSTRAINT `account_user_id_user_id_fk` FOREIGN KEY (`user_id`) REFERENCES `user`(`id`) ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
-ALTER TABLE `session` ADD CONSTRAINT `session_user_id_user_id_fk` FOREIGN KEY (`user_id`) REFERENCES `user`(`id`) ON DELETE cascade ON UPDATE no action;
+ALTER TABLE `session` ADD CONSTRAINT `session_user_id_user_id_fk` FOREIGN KEY (`user_id`) REFERENCES `user`(`id`) ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE `node` ADD CONSTRAINT `node_page_id_page_id_fk` FOREIGN KEY (`page_id`) REFERENCES `page`(`id`) ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE `page` ADD CONSTRAINT `page_user_id_user_id_fk` FOREIGN KEY (`user_id`) REFERENCES `user`(`id`) ON DELETE cascade ON UPDATE no action;
