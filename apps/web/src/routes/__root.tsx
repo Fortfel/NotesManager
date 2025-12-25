@@ -11,29 +11,7 @@ export const Route = createRootRouteWithContext<RouterContext>()({
   head: (_ctx) => ({
     meta: [
       {
-        title: 'My App',
-
-        // Dynamic titles via context:
-        // Child routes can set context with getTitle() function, which can be
-        // accessed here to build dynamic page titles like "My App - Page Name"
-        //
-        // Example in child route:
-        // context: () => ({ getTitle: () => 'Dashboard' })
-        // or
-        // context: ({ context }) => {
-        //     context.getTitle = () => 'new title'
-        //   },
-        //
-        // Then access it here:
-        // title: (() => {
-        //   const title = ctx.matches.at(-1)?.context.getTitle?.()
-        //   return title ? `My App - ${title}` : 'My App'
-        // })()
-        //
-        // Note: This only works with the `context` property in child routes,
-        // NOT with `beforeLoad`.
-        //
-        // See: https://tkdodo.eu/blog/context-inheritance-in-tan-stack-router
+        title: 'Notes Manager',
       },
     ],
     links: [

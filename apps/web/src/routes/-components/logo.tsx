@@ -15,7 +15,7 @@ const Logo = ({ className, ...props }: React.ComponentProps<'div'>) => {
       <div className={'bg-destructive text-destructive-foreground flex size-9 items-center justify-center rounded-md'}>
         <LogoIcon aria-hidden="true" />
       </div>
-      <span className={'font-semibold leading-5 tracking-tighter'}>todos</span>
+      <span className={'font-semibold leading-5 tracking-tighter'}>NotesManager</span>
     </div>
   )
 }

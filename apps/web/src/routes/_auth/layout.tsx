@@ -12,11 +12,15 @@ export const Route = createFileRoute('/_auth')({
     middlewares: [stripSearchParams(authSearchParamsDefaults)],
   },
   beforeLoad: async ({ context, search }) => {
-    // Redirect if already authenticated
-    const { data: session } = await context.authClient.getSession()
+    try {
+      const { data: session } = await context.authClient.getSession()
 
-    if (session?.user) {
-      throw redirect({ to: search.redirect })
+      if (session?.user) {
+        // Redirect if already authenticated
+        throw redirect({ to: search.redirect })
+      }
+    } catch (e) {
+      console.error(e)
     }
   },
   component: RouteComponent,
