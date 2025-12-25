@@ -26,6 +26,7 @@
     "@workspace/auth": "workspace:*",
     "@workspace/ui": "workspace:*",
     "@workspace/validators": "workspace:*",
+    "immer": "catalog:",
     "lucide-react": "catalog:",
     "react": "catalog:react19",
     "react-dom": "catalog:react19",
