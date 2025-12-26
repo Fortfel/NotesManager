@@ -28,6 +28,7 @@
     "@workspace/validators": "workspace:*",
     "immer": "catalog:",
     "lucide-react": "catalog:",
+    "nanoid": "catalog:",
     "react": "catalog:react19",
     "react-dom": "catalog:react19",
     "sonner": "catalog:",
