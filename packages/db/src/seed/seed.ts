@@ -96,7 +96,6 @@ const main = async (): Promise<void> => {
           id: funcs.uuid(),
           type: funcs.valuesFromArray({ values: ['text', 'heading1', 'heading2'] }),
           value: funcs.valuesFromArray({ values: messages }),
-          order: funcs.int({ minValue: 0, maxValue: 100 }),
         },
       },
     }))
@@ -128,7 +127,6 @@ const main = async (): Promise<void> => {
         id: crypto.randomUUID(),
         type: 'text',
         value: 'This is a demo note from the test account.',
-        order: 1,
         pageId: pageId,
       })
 

@@ -13,9 +13,7 @@ export const noteRouter = {
       where: eq(page.userId, ctx.session.session.userId),
       orderBy: desc(page.updatedAt),
       with: {
-        nodes: {
-          orderBy: (nodes, { asc }) => [asc(nodes.order)],
-        },
+        nodes: true,
       },
     })
   }),
@@ -25,9 +23,7 @@ export const noteRouter = {
     return ctx.db.query.page.findFirst({
       where: and(eq(page.id, input.id), eq(page.userId, ctx.session.session.userId)),
       with: {
-        nodes: {
-          orderBy: (nodes, { asc }) => [asc(nodes.order)],
-        },
+        nodes: true,
       },
     })
   }),
@@ -37,9 +33,7 @@ export const noteRouter = {
     return ctx.db.query.page.findFirst({
       where: eq(page.slug, input.slug),
       with: {
-        nodes: {
-          orderBy: (nodes, { asc }) => [asc(nodes.order)],
-        },
+        nodes: true,
       },
     })
   }),
