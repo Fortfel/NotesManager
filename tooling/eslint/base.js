@@ -79,7 +79,6 @@ export const config = tseslint.config(
       'unicorn/no-nested-ternary': 'off',
       'unicorn/consistent-function-scoping': 'off',
       'unicorn/prefer-top-level-await': 'off',
-      'unicorn/filename-case': 'off',
     },
   },
 
@@ -123,6 +122,9 @@ export const config = tseslint.config(
             kebabCase: true,
             pascalCase: true,
           },
+          ignore: [
+            /^\$/, // Ignore files starting with $ sign
+          ],
         },
       ],
 
@@ -192,6 +194,17 @@ export const config = tseslint.config(
               name: 'Redirect',
             },
           ],
+        },
+      ],
+      '@typescript-eslint/prefer-nullish-coalescing': [
+        'error',
+        {
+          ignorePrimitives: {
+            bigint: false,
+            boolean: false,
+            number: false,
+            string: true,
+          },
         },
       ],
       'tsdoc/syntax': 'warn',
