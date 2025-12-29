@@ -2,15 +2,7 @@ import { createFileRoute, Outlet, redirect } from '@tanstack/react-router'
 
 export const Route = createFileRoute('/_app/_protected')({
   beforeLoad: async ({ context, location }) => {
-    let session
-
-    try {
-      const result = await context.authClient.getSession()
-      session = result.data
-    } catch (error) {
-      console.error('Failed to get session:', error)
-      throw redirect({ to: '/login' })
-    }
+    const { data: session } = await context.authClient.getSession()
 
     if (!session?.user) {
       throw redirect({
