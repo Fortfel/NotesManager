@@ -3,7 +3,6 @@ import { createFileRoute, Outlet, stripSearchParams, useNavigate } from '@tansta
 import { zodValidator } from '@tanstack/zod-adapter'
 
 import { authClient } from '@/lib/auth-client'
-import { AppStoreProvider } from '@/providers/app-store-provider'
 import { appSearchParamsDefaults, appSearchParamsSchema } from '@/routes/_app/-validations/app-link-options'
 import { AppNavbar } from '@/routes/-components/layout/nav/app-navbar'
 
@@ -74,9 +73,7 @@ function RouteComponent() {
         className={'mx-auto min-h-dvh max-w-7xl px-4 py-6 pt-[calc(var(--nav-height)+1.5rem)] sm:px-6 lg:px-8'}
         style={{ '--nav-height': navbarHeight } as React.CSSProperties}
       >
-        <AppStoreProvider>
-          <Outlet />
-        </AppStoreProvider>
+        <Outlet />
       </main>
     </div>
   )
