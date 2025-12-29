@@ -1,5 +1,4 @@
 import { createTRPCClient, httpBatchLink, loggerLink } from '@trpc/client'
-import { createTRPCContext } from '@trpc/tanstack-react-query'
 import SuperJSON from 'superjson'
 import urlJoin from 'url-join'
 
@@ -32,6 +31,6 @@ export const createTanstackQueryTRPCClient = ({ serverUrl, apiPath, isDev }: TRP
   })
 }
 
-export const { TRPCProvider, useTRPC, useTRPCClient } = createTRPCContext<AppRouter>()
+export { createTRPCOptionsProxy } from '@trpc/tanstack-react-query'
 
 export type { AppRouter, RouterInputs, RouterOutputs } from '../server'

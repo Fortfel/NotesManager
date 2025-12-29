@@ -1,15 +1,15 @@
 import type { authClient } from '@/lib/auth-client'
-import type { trpcClient } from '@/lib/trpc-client'
-import type { QueryClient } from '@tanstack/react-query'
 import { createRouter } from '@tanstack/react-router'
 
 import { CircleSpinner } from '@workspace/ui/components/spinner'
 
 import { env } from '@/env'
+import { queryClient } from '@/lib/query-client'
+import { trpcClient } from '@/lib/trpc-client'
 import { routeTree } from '@/routeTree.gen'
 
 export interface RouterContext {
-  queryClient: QueryClient
+  queryClient: typeof queryClient
   trpcClient: typeof trpcClient
   authClient: typeof authClient
   getTitle?: () => string
@@ -21,7 +21,7 @@ const basepath =
     ? env.PUBLIC_BASE_PATH.slice(0, -1)
     : env.PUBLIC_BASE_PATH
 
-export function createAppRouter({ queryClient, trpcClient, authClient }: RouterContext) {
+export function createAppRouter({ authClient }: Pick<RouterContext, 'authClient'>) {
   return createRouter({
     routeTree,
     context: {
