@@ -8,15 +8,24 @@ import { protectedProcedure, publicProcedure } from '../trpc'
 
 export const noteRouter = {
   // Get all pages for the current user
-  all: protectedProcedure.query(({ ctx }) => {
-    return ctx.db.query.page.findMany({
-      where: eq(page.userId, ctx.session.session.userId),
-      orderBy: desc(page.updatedAt),
-      with: {
-        nodes: true,
-      },
-    })
-  }),
+  all: protectedProcedure
+    .input(
+      z.object({
+        limit: z.number().min(1).max(100).optional().default(20),
+        offset: z.number().min(0).optional().default(0),
+      }),
+    )
+    .query(({ ctx, input }) => {
+      return ctx.db.query.page.findMany({
+        where: eq(page.userId, ctx.session.session.userId),
+        orderBy: desc(page.updatedAt),
+        limit: input.limit,
+        offset: input.offset,
+        with: {
+          nodes: true,
+        },
+      })
+    }),
 
   // Get a single page by ID with all its nodes
   byId: protectedProcedure.input(z.object({ id: z.uuid() })).query(({ ctx, input }) => {
