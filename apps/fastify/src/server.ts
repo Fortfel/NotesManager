@@ -58,19 +58,6 @@ export function createServer(): {
 
   server.register(fastifyCookie)
 
-  // Origin/Referer validation hook - blocks requests without valid origin (Postman, curl, etc.)
-  server.addHook('onRequest', async (request, reply) => {
-    const referer = request.headers.referer
-    const origin = request.headers.origin
-
-    const isValidReferer = referer && env.CORS_ORIGIN.some((allowed) => referer.startsWith(allowed))
-    const isValidOrigin = origin && env.CORS_ORIGIN.includes(origin)
-
-    if (!isValidReferer && !isValidOrigin) {
-      return reply.status(403).send({ error: 'Forbidden: Invalid origin' })
-    }
-  })
-
   // Auth endpoint
   server.route({
     method: ['GET', 'POST'],
