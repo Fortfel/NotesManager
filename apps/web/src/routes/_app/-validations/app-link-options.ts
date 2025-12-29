@@ -20,6 +20,12 @@ export const homeLinkOptions = linkOptions({
   // search: appSearchParamsDefaults,
 })
 
+export const pageLinkOptions = (pageId: string) =>
+  linkOptions({
+    to: '/$pageId',
+    params: { pageId: pageId },
+  })
+
 export const profileLinkOptions = linkOptions({
   to: '/profile',
 })
