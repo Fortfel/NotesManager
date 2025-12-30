@@ -33,6 +33,7 @@
     "react-dom": "catalog:react19",
     "sonner": "catalog:",
     "url-join": "catalog:",
+    "use-immer": "catalog:",
     "zod": "catalog:"
   },
   "devDependencies": {
