@@ -29,9 +29,8 @@ export const page = mysqlTable('page', (t) => ({
 // Node table - stores individual nodes for each page
 export const node = mysqlTable('node', (t) => ({
   id: t.varchar({ length: 36 }).primaryKey(),
-  type: t.varchar({ length: 20 }).notNull(), // text, list, page, heading1, etc.
+  type: t.mysqlEnum(nodeTypes).notNull(),
   value: t.text().notNull(),
-  ...timestamps,
   pageId: t
     .varchar({ length: 36 })
     .notNull()
@@ -61,9 +60,6 @@ export const nodeInsertSchema = createInsertSchema(node, {
   pageId: z.uuid(),
   type: z.enum(nodeTypes),
   value: z.string(),
-}).omit({
-  createdAt: true,
-  updatedAt: true,
 })
 
 // Relations

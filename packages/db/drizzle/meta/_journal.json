@@ -15,6 +15,20 @@
       "when": 1766691972021,
       "tag": "0001_woozy_post",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "5",
+      "when": 1767086188561,
+      "tag": "0002_melodic_dark_beast",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "5",
+      "when": 1767098084017,
+      "tag": "0003_white_ares",
+      "breakpoints": true
     }
   ]
 }

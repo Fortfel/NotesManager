@@ -1,0 +1,1 @@
+ALTER TABLE `node` MODIFY COLUMN `type` enum('text','list','page','heading1','heading2','heading3') NOT NULL;
