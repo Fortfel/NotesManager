@@ -6,6 +6,7 @@ import { CircleSpinner } from '@workspace/ui/components/spinner'
 import { env } from '@/env'
 import { queryClient } from '@/lib/query-client'
 import { trpcClient } from '@/lib/trpc-client'
+import { NotFound } from '@/routes/-components/not-found'
 import { routeTree } from '@/routeTree.gen'
 
 export interface RouterContext {
@@ -40,6 +41,7 @@ export function createAppRouter({ authClient }: Pick<RouterContext, 'authClient'
         <CircleSpinner />
       </div>
     ),
+    defaultNotFoundComponent: NotFound,
   })
 }
 
