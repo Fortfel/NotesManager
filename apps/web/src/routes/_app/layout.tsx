@@ -1,13 +1,12 @@
 import * as React from 'react'
 import { createFileRoute, Outlet, stripSearchParams, useNavigate } from '@tanstack/react-router'
-import { zodValidator } from '@tanstack/zod-adapter'
 
 import { authClient } from '@/lib/auth-client'
 import { appSearchParamsDefaults, appSearchParamsSchema } from '@/routes/_app/-validations/app-link-options'
 import { AppNavbar } from '@/routes/-components/layout/nav/app-navbar'
 
 export const Route = createFileRoute('/_app')({
-  validateSearch: zodValidator(appSearchParamsSchema),
+  validateSearch: appSearchParamsSchema,
   search: {
     // Remove refetchSession from URL if it equals false to keep the URL clean
     middlewares: [stripSearchParams(appSearchParamsDefaults)],
