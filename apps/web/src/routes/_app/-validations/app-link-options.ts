@@ -11,6 +11,12 @@ export type AppSearchParams = z.infer<typeof appSearchParamsSchema>
 
 export const appSearchParamsDefaults = appSearchParamsSchema.parse({})
 
+export const appParamsSchema = z.object({
+  pageId: z.uuid(),
+})
+
+export type AppParams = z.infer<typeof appParamsSchema>
+
 export const homeLinkOptions = linkOptions({
   to: '/',
 

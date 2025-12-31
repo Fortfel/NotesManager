@@ -22,6 +22,7 @@ import { Route as AppPublicContactRouteImport } from './routes/_app/_public/cont
 import { Route as AppPublicAboutRouteImport } from './routes/_app/_public/about'
 import { Route as AppProtectedSettingsRouteImport } from './routes/_app/_protected/settings'
 import { Route as AppProtectedProfileRouteImport } from './routes/_app/_protected/profile'
+import { Route as AppProtectedPageIdRouteImport } from './routes/_app/_protected/$pageId'
 
 const AuthLayoutRoute = AuthLayoutRouteImport.update({
   id: '/_auth',
@@ -85,11 +86,17 @@ const AppProtectedProfileRoute = AppProtectedProfileRouteImport.update({
   path: '/profile',
   getParentRoute: () => AppProtectedLayoutRoute,
 } as any)
+const AppProtectedPageIdRoute = AppProtectedPageIdRouteImport.update({
+  id: '/$pageId',
+  path: '/$pageId',
+  getParentRoute: () => AppProtectedLayoutRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/login': typeof AuthLoginRoute
   '/register': typeof AuthRegisterRoute
   '/': typeof AppIndexRoute
+  '/$pageId': typeof AppProtectedPageIdRoute
   '/profile': typeof AppProtectedProfileRoute
   '/settings': typeof AppProtectedSettingsRoute
   '/about': typeof AppPublicAboutRoute
@@ -102,6 +109,7 @@ export interface FileRoutesByTo {
   '/login': typeof AuthLoginRoute
   '/register': typeof AuthRegisterRoute
   '/': typeof AppIndexRoute
+  '/$pageId': typeof AppProtectedPageIdRoute
   '/profile': typeof AppProtectedProfileRoute
   '/settings': typeof AppProtectedSettingsRoute
   '/about': typeof AppPublicAboutRoute
@@ -118,6 +126,7 @@ export interface FileRoutesById {
   '/_auth/login': typeof AuthLoginRoute
   '/_auth/register': typeof AuthRegisterRoute
   '/_app/': typeof AppIndexRoute
+  '/_app/_protected/$pageId': typeof AppProtectedPageIdRoute
   '/_app/_protected/profile': typeof AppProtectedProfileRoute
   '/_app/_protected/settings': typeof AppProtectedSettingsRoute
   '/_app/_public/about': typeof AppPublicAboutRoute
@@ -132,6 +141,7 @@ export interface FileRouteTypes {
     | '/login'
     | '/register'
     | '/'
+    | '/$pageId'
     | '/profile'
     | '/settings'
     | '/about'
@@ -144,6 +154,7 @@ export interface FileRouteTypes {
     | '/login'
     | '/register'
     | '/'
+    | '/$pageId'
     | '/profile'
     | '/settings'
     | '/about'
@@ -159,6 +170,7 @@ export interface FileRouteTypes {
     | '/_auth/login'
     | '/_auth/register'
     | '/_app/'
+    | '/_app/_protected/$pageId'
     | '/_app/_protected/profile'
     | '/_app/_protected/settings'
     | '/_app/_public/about'
@@ -266,15 +278,24 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppProtectedProfileRouteImport
       parentRoute: typeof AppProtectedLayoutRoute
     }
+    '/_app/_protected/$pageId': {
+      id: '/_app/_protected/$pageId'
+      path: '/$pageId'
+      fullPath: '/$pageId'
+      preLoaderRoute: typeof AppProtectedPageIdRouteImport
+      parentRoute: typeof AppProtectedLayoutRoute
+    }
   }
 }
 
 interface AppProtectedLayoutRouteChildren {
+  AppProtectedPageIdRoute: typeof AppProtectedPageIdRoute
   AppProtectedProfileRoute: typeof AppProtectedProfileRoute
   AppProtectedSettingsRoute: typeof AppProtectedSettingsRoute
 }
 
 const AppProtectedLayoutRouteChildren: AppProtectedLayoutRouteChildren = {
+  AppProtectedPageIdRoute: AppProtectedPageIdRoute,
   AppProtectedProfileRoute: AppProtectedProfileRoute,
   AppProtectedSettingsRoute: AppProtectedSettingsRoute,
 }
