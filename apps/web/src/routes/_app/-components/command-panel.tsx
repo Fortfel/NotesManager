@@ -8,6 +8,7 @@ import {
   CommandItem,
   CommandList,
 } from '@workspace/ui/components/command'
+import { Popover, PopoverAnchor, PopoverContent } from '@workspace/ui/components/popover'
 import { cn } from '@workspace/ui/lib/utils'
 
 type CommandPanel<TType extends string = string> = {
@@ -18,44 +19,70 @@ type CommandPanel<TType extends string = string> = {
 interface CommandPanelProps<TType extends string = string> {
   commands: ReadonlyArray<CommandPanel<TType>>
   onSelect: (type: TType) => void
-  onClose?: () => void
+  open: boolean
+  onOpenChange: (open: boolean) => void
   className?: string
 }
 
 export const CommandPanel = <TType extends string = string>({
   commands,
   onSelect,
-  onClose,
+  open,
+  onOpenChange,
   className,
 }: CommandPanelProps<TType>) => {
   const inputRef = React.useRef<HTMLInputElement>(null)
 
   React.useEffect(() => {
-    inputRef.current?.focus()
-  }, [])
+    if (open) {
+      // Small delay to ensure the popover is rendered
+      setTimeout(() => inputRef.current?.focus(), 0)
+    }
+  }, [open])
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === 'Escape' && onClose) {
+    if (e.key === 'Escape') {
       e.preventDefault()
-      onClose()
+      onOpenChange(false)
     }
   }
 
   return (
-    <div className="absolute left-0 top-full">
-      <Command className={cn('bg-popover z-50 mt-1 w-[300px] rounded-lg border shadow-md', className)}>
-        <CommandInput ref={inputRef} onKeyDown={handleKeyDown} placeholder="Type a command..." />
-        <CommandList>
-          <CommandEmpty>No commands found</CommandEmpty>
-          <CommandGroup>
-            {commands.map((cmd) => (
-              <CommandItem key={cmd.value} value={cmd.value} onSelect={() => onSelect(cmd.value)}>
-                {cmd.name}
-              </CommandItem>
-            ))}
-          </CommandGroup>
-        </CommandList>
-      </Command>
-    </div>
+    <Popover open={open} onOpenChange={onOpenChange}>
+      <PopoverAnchor asChild>
+        <div className="absolute left-0 top-0 h-0 w-0" />
+      </PopoverAnchor>
+      <PopoverContent
+        className={cn('w-[300px] p-0', className)}
+        align="start"
+        side="bottom"
+        sideOffset={4}
+        onOpenAutoFocus={(e) => {
+          e.preventDefault()
+          inputRef.current?.focus()
+        }}
+      >
+        <Command>
+          <CommandInput ref={inputRef} onKeyDown={handleKeyDown} placeholder="Type a command..." />
+          <CommandList>
+            <CommandEmpty>No commands found</CommandEmpty>
+            <CommandGroup>
+              {commands.map((cmd) => (
+                <CommandItem
+                  key={cmd.value}
+                  value={cmd.value}
+                  onSelect={() => {
+                    onSelect(cmd.value)
+                    onOpenChange(false)
+                  }}
+                >
+                  {cmd.name}
+                </CommandItem>
+              ))}
+            </CommandGroup>
+          </CommandList>
+        </Command>
+      </PopoverContent>
+    </Popover>
   )
 }
