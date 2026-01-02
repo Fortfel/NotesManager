@@ -114,10 +114,18 @@ const main = async (): Promise<void> => {
 
       // Add some pages for the test user
       const pageId = crypto.randomUUID()
+      const pageId2 = crypto.randomUUID()
       await db.insert(pageTable).values({
         id: pageId,
         slug: 'demo-page',
         title: 'Demo Page',
+        cover: '',
+        userId: testUser.user.id,
+      })
+      await db.insert(pageTable).values({
+        id: pageId2,
+        slug: 'demo-page2',
+        title: 'Demo Page2',
         cover: '',
         userId: testUser.user.id,
       })
@@ -128,6 +136,18 @@ const main = async (): Promise<void> => {
         type: 'text',
         value: 'This is a demo note from the test account.',
         pageId: pageId,
+      })
+      await db.insert(nodeTable).values({
+        id: crypto.randomUUID(),
+        type: 'text',
+        value: 'This is a demo note2 from the test account.',
+        pageId: pageId2,
+      })
+      await db.insert(nodeTable).values({
+        id: crypto.randomUUID(),
+        type: 'text',
+        value: 'This is a demo note3 from the test account.',
+        pageId: pageId2,
       })
 
       console.log('✅ Test account created successfully')
