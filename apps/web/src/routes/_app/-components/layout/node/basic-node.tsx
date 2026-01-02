@@ -1,11 +1,10 @@
+import type { NodeOutput } from '@/utils/types'
 import * as React from 'react'
 
-import type { RouterOutputs } from '@workspace/api/server'
 import { cn } from '@workspace/ui/lib/utils'
 
 import { CommandPanel } from '@/routes/_app/-components/command-panel'
 
-type NodeOutput = RouterOutputs['notes']['all'][number]['nodes'][number]
 type NodeType = NodeOutput['type']
 
 interface BasicNodeProps {
@@ -18,14 +17,6 @@ interface BasicNodeProps {
   isFocused: boolean
   index: number
 }
-
-const DEFAULT_COMMANDS = [
-  { value: 'text', name: 'Text' },
-  { value: 'heading1', name: 'Heading 1' },
-  { value: 'heading2', name: 'Heading 2' },
-  { value: 'heading3', name: 'Heading 3' },
-  { value: 'list', name: 'List' },
-] as const satisfies Array<{ value: NodeType; name: string }>
 
 const BasicNode = ({
   node,
@@ -135,12 +126,7 @@ const BasicNode = ({
   return (
     <div data-slot="basic-node" className={cn('relative', className)} {...props}>
       {shouldShowCommandPanel && (
-        <CommandPanel
-          commands={DEFAULT_COMMANDS}
-          open={shouldShowCommandPanel}
-          onOpenChange={handleCommandClose}
-          onSelect={handleCommandSelect}
-        />
+        <CommandPanel open={shouldShowCommandPanel} onOpenChange={handleCommandClose} onSelect={handleCommandSelect} />
       )}
       <div
         ref={nodeRef}
@@ -149,7 +135,13 @@ const BasicNode = ({
         onKeyDown={handleKeyDown}
         contentEditable
         suppressContentEditableWarning
-        className="min-h-[1.5em] py-1 outline-none"
+        className={cn(
+          'min-h-[1.5em] py-1 outline-none',
+          node.type === 'list' ? 'list-item list-inside list-disc' : 'list-none',
+          node.type === 'heading1' ? 'text-2xl font-bold' : '',
+          node.type === 'heading2' ? 'text-xl font-bold' : '',
+          node.type === 'heading3' ? 'text-lg font-bold' : '',
+        )}
         role="textbox"
         tabIndex={0}
         aria-label={`Node ${(index + 1).toString()}`}

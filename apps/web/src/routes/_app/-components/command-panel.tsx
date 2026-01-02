@@ -1,3 +1,4 @@
+import type { NodeOutput } from '@/utils/types'
 import * as React from 'react'
 
 import {
@@ -11,26 +12,25 @@ import {
 import { Popover, PopoverAnchor, PopoverContent } from '@workspace/ui/components/popover'
 import { cn } from '@workspace/ui/lib/utils'
 
-type CommandPanel<TType extends string = string> = {
-  value: TType
-  name: string
-}
+type NodeType = NodeOutput['type']
 
-interface CommandPanelProps<TType extends string = string> {
-  commands: ReadonlyArray<CommandPanel<TType>>
-  onSelect: (type: TType) => void
+const SUPPORTED_COMMANDS = [
+  { value: 'text', name: 'Text' },
+  { value: 'list', name: 'List' },
+  { value: 'heading1', name: 'Heading 1' },
+  { value: 'heading2', name: 'Heading 2' },
+  { value: 'heading3', name: 'Heading 3' },
+  { value: 'page', name: 'Page' },
+] as const satisfies Array<{ value: NodeType; name: string }>
+
+interface CommandPanelProps {
+  onSelect: (type: NodeType) => void
   open: boolean
   onOpenChange: (open: boolean) => void
   className?: string
 }
 
-export const CommandPanel = <TType extends string = string>({
-  commands,
-  onSelect,
-  open,
-  onOpenChange,
-  className,
-}: CommandPanelProps<TType>) => {
+export const CommandPanel = ({ onSelect, open, onOpenChange, className }: CommandPanelProps) => {
   const inputRef = React.useRef<HTMLInputElement>(null)
 
   React.useEffect(() => {
@@ -66,8 +66,8 @@ export const CommandPanel = <TType extends string = string>({
           <CommandInput ref={inputRef} onKeyDown={handleKeyDown} placeholder="Type a command..." />
           <CommandList>
             <CommandEmpty>No commands found</CommandEmpty>
-            <CommandGroup>
-              {commands.map((cmd) => (
+            <CommandGroup heading="Blocks">
+              {SUPPORTED_COMMANDS.map((cmd) => (
                 <CommandItem
                   key={cmd.value}
                   value={cmd.value}
