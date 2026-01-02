@@ -1,4 +1,7 @@
+import type { DragEndEvent } from '@dnd-kit/core'
 import * as React from 'react'
+import { DndContext, DragOverlay, PointerSensor, useSensor, useSensors } from '@dnd-kit/core'
+import { arrayMove, SortableContext } from '@dnd-kit/sortable'
 import { useQuery } from '@tanstack/react-query'
 import { createFileRoute, notFound, rootRouteId } from '@tanstack/react-router'
 import { nanoid } from 'nanoid'
@@ -7,7 +10,8 @@ import { useImmer } from 'use-immer'
 import { useFocusedNodeIndex } from '@/hooks/use-focused-node-index'
 import { trpcClient } from '@/lib/trpc-client'
 import { Cover } from '@/routes/_app/-components/layout/cover'
-import { BasicNode } from '@/routes/_app/-components/layout/node/basic-node'
+import { NodeContainer } from '@/routes/_app/-components/layout/node/node-container'
+import { NodeTypeSwitcher } from '@/routes/_app/-components/layout/node/node-type-switcher'
 import { Title } from '@/routes/_app/-components/layout/title'
 import { appParamsSchema } from '@/routes/_app/-validations/app-link-options'
 
@@ -39,6 +43,14 @@ function RouteComponent() {
 
   const [focusedNodeIndex, setFocusedNodeIndex] = useFocusedNodeIndex({ nodes })
 
+  const sensors = useSensors(
+    useSensor(PointerSensor, {
+      activationConstraint: {
+        distance: 8,
+      },
+    }),
+  )
+
   // Update local page state when query data changes
   React.useEffect(() => {
     setLocalPage(pageQuery.data)
@@ -50,20 +62,6 @@ function RouteComponent() {
       setLocalPage((draft) => {
         if (draft?.nodes[index]) {
           draft.nodes[index].value = value
-        }
-      })
-    },
-    [setLocalPage],
-  )
-
-  // Handler to update node by ID
-  const handleUpdateNodeById = React.useCallback(
-    (id: string, value: string) => {
-      setLocalPage((draft) => {
-        if (!draft) return
-        const node = draft.nodes.find((n) => n.id === id)
-        if (node) {
-          node.value = value
         }
       })
     },
@@ -108,20 +106,6 @@ function RouteComponent() {
     [setLocalPage],
   )
 
-  // Handler to remove node by ID
-  const handleRemoveNodeById = React.useCallback(
-    (id: string) => {
-      setLocalPage((draft) => {
-        if (!draft) return
-        const nodeIndex = draft.nodes.findIndex((n) => n.id === id)
-        if (nodeIndex !== -1) {
-          draft.nodes.splice(nodeIndex, 1)
-        }
-      })
-    },
-    [setLocalPage],
-  )
-
   // Handler to update cover
   const handleCoverChange = React.useCallback(
     (filePath: string) => {
@@ -159,6 +143,37 @@ function RouteComponent() {
     }
   }, [nodes.length, handleAddNode, setFocusedNodeIndex])
 
+  const handleDragEnd = React.useCallback(
+    (event: DragEndEvent) => {
+      const { active, over } = event
+
+      if (!over || active.id === over.id) return
+
+      setLocalPage((draft) => {
+        if (!draft) return
+
+        const oldIndex = draft.nodes.findIndex((node) => node.id === active.id)
+        const newIndex = draft.nodes.findIndex((node) => node.id === over.id)
+
+        if (oldIndex !== -1 && newIndex !== -1) {
+          draft.nodes = arrayMove(draft.nodes, oldIndex, newIndex)
+        }
+      })
+    },
+    [setLocalPage],
+  )
+
+  const handleUpdateNodeType = React.useCallback(
+    (type: (typeof nodes)[number]['type'], index: number) => {
+      setLocalPage((draft) => {
+        if (draft?.nodes[index]) {
+          draft.nodes[index].type = type
+        }
+      })
+    },
+    [setLocalPage],
+  )
+
   if (pageQuery.isLoading) return <div>Loading...</div>
   if (pageQuery.isError) return <div>Error: {pageQuery.error.message}</div>
   if (!localPage) return <div>Page not found</div>
@@ -166,19 +181,26 @@ function RouteComponent() {
   return (
     <div>
       <Cover filePath={cover} onCoverChange={handleCoverChange} />
-      <Title title={title} onTitleChange={handleTitleChange} onEnterKeyDown={() => console.log('Add node')} />
-      {nodes.map((node, index) => (
-        <BasicNode
-          key={node.id}
-          node={node}
-          updateNodeValue={handleUpdateNodeValue}
-          addNode={(value, index) => handleAddNode({ value }, index)}
-          removeNode={handleRemoveNode}
-          updateFocusedIndex={setFocusedNodeIndex}
-          isFocused={focusedNodeIndex === index}
-          index={index}
-        />
-      ))}
+      <Title title={title} onTitleChange={handleTitleChange} onEnterKeyDown={handleTitleEnter} className="mt-6" />
+      <DndContext sensors={sensors} onDragEnd={handleDragEnd}>
+        <SortableContext items={nodes}>
+          {nodes.map((node, index) => (
+            <NodeContainer key={node.id} id={node.id}>
+              <NodeTypeSwitcher
+                node={node}
+                updateNodeValue={handleUpdateNodeValue}
+                updateNodeType={handleUpdateNodeType}
+                addNode={(value, index) => handleAddNode({ value }, index)}
+                removeNode={handleRemoveNode}
+                updateFocusedIndex={setFocusedNodeIndex}
+                isFocused={focusedNodeIndex === index}
+                index={index}
+              />
+            </NodeContainer>
+          ))}
+        </SortableContext>
+        <DragOverlay />
+      </DndContext>
       {/* Spacer */}
       {/* eslint-disable-next-line jsx-a11y/click-events-have-key-events */}
       <div role="button" tabIndex={0} onClick={handleSpacerClick}>
