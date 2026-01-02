@@ -31,19 +31,3 @@ export const pageLinkOptions = (pageId: string) =>
     to: '/$pageId',
     params: { pageId: pageId },
   })
-
-export const profileLinkOptions = linkOptions({
-  to: '/profile',
-})
-
-export const settingsLinkOptions = linkOptions({
-  to: '/settings',
-})
-
-export const aboutLinkOptions = linkOptions({
-  to: '/about',
-})
-
-export const contactLinkOptions = linkOptions({
-  to: '/contact',
-})

@@ -19,9 +19,6 @@ type NavigationLinkBasic = {
 type NavigationLink = NavigationLinkBasic
 
 // Navigation links array to be used in both desktop and mobile menus
-export const navigationLinks = [
-  { type: 'basic', label: 'About', href: '/about' },
-  { type: 'basic', label: 'Contact', href: '/contact' },
-] as const satisfies ReadonlyArray<NavigationLink>
+export const navigationLinks = [] as const satisfies ReadonlyArray<NavigationLink>
 
 export type NavigationLinks = (typeof navigationLinks)[number]

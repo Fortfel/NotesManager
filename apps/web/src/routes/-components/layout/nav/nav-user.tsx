@@ -1,4 +1,4 @@
-import { IconLogout, IconSettings, IconUser } from '@tabler/icons-react'
+import { IconLogout } from '@tabler/icons-react'
 import { Link, useLocation, useMatches, useNavigate, useRouter } from '@tanstack/react-router'
 
 import { Avatar, AvatarFallback, AvatarImage } from '@workspace/ui/components/avatar'
@@ -15,7 +15,7 @@ import {
 import { CircleSpinner } from '@workspace/ui/components/spinner'
 
 import { authClient } from '@/lib/auth-client'
-import { homeLinkOptions, profileLinkOptions, settingsLinkOptions } from '@/routes/_app/-validations/app-link-options'
+import { homeLinkOptions } from '@/routes/_app/-validations/app-link-options'
 import { loginLinkOptions } from '@/routes/_auth/-validations/auth-link-options'
 
 const NavUser = () => {
@@ -54,15 +54,6 @@ const NavUser = () => {
                   <span className="text-muted-foreground truncate text-xs">{session.user.email}</span>
                 </div>
               </DropdownMenuLabel>
-            </DropdownMenuGroup>
-            <DropdownMenuSeparator />
-            <DropdownMenuGroup>
-              <DropdownMenuItem onClick={() => void navigate(profileLinkOptions)} className="cursor-pointer">
-                <IconUser /> Profile
-              </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => void navigate(settingsLinkOptions)} className="cursor-pointer">
-                <IconSettings /> Settings
-              </DropdownMenuItem>
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
             <DropdownMenuGroup>

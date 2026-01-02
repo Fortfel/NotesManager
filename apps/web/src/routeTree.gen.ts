@@ -18,10 +18,6 @@ import { Route as AppProtectedLayoutRouteImport } from './routes/_app/_protected
 import { Route as AuthPasswordIndexRouteImport } from './routes/_auth/password.index'
 import { Route as AuthPasswordResetRouteImport } from './routes/_auth/password.reset'
 import { Route as AuthAuthErrorRouteImport } from './routes/_auth/auth.error'
-import { Route as AppPublicContactRouteImport } from './routes/_app/_public/contact'
-import { Route as AppPublicAboutRouteImport } from './routes/_app/_public/about'
-import { Route as AppProtectedSettingsRouteImport } from './routes/_app/_protected/settings'
-import { Route as AppProtectedProfileRouteImport } from './routes/_app/_protected/profile'
 import { Route as AppProtectedPageIdRouteImport } from './routes/_app/_protected/$pageId'
 
 const AuthLayoutRoute = AuthLayoutRouteImport.update({
@@ -66,26 +62,6 @@ const AuthAuthErrorRoute = AuthAuthErrorRouteImport.update({
   path: '/auth/error',
   getParentRoute: () => AuthLayoutRoute,
 } as any)
-const AppPublicContactRoute = AppPublicContactRouteImport.update({
-  id: '/_public/contact',
-  path: '/contact',
-  getParentRoute: () => AppLayoutRoute,
-} as any)
-const AppPublicAboutRoute = AppPublicAboutRouteImport.update({
-  id: '/_public/about',
-  path: '/about',
-  getParentRoute: () => AppLayoutRoute,
-} as any)
-const AppProtectedSettingsRoute = AppProtectedSettingsRouteImport.update({
-  id: '/settings',
-  path: '/settings',
-  getParentRoute: () => AppProtectedLayoutRoute,
-} as any)
-const AppProtectedProfileRoute = AppProtectedProfileRouteImport.update({
-  id: '/profile',
-  path: '/profile',
-  getParentRoute: () => AppProtectedLayoutRoute,
-} as any)
 const AppProtectedPageIdRoute = AppProtectedPageIdRouteImport.update({
   id: '/$pageId',
   path: '/$pageId',
@@ -97,10 +73,6 @@ export interface FileRoutesByFullPath {
   '/register': typeof AuthRegisterRoute
   '/': typeof AppIndexRoute
   '/$pageId': typeof AppProtectedPageIdRoute
-  '/profile': typeof AppProtectedProfileRoute
-  '/settings': typeof AppProtectedSettingsRoute
-  '/about': typeof AppPublicAboutRoute
-  '/contact': typeof AppPublicContactRoute
   '/auth/error': typeof AuthAuthErrorRoute
   '/password/reset': typeof AuthPasswordResetRoute
   '/password': typeof AuthPasswordIndexRoute
@@ -110,10 +82,6 @@ export interface FileRoutesByTo {
   '/register': typeof AuthRegisterRoute
   '/': typeof AppIndexRoute
   '/$pageId': typeof AppProtectedPageIdRoute
-  '/profile': typeof AppProtectedProfileRoute
-  '/settings': typeof AppProtectedSettingsRoute
-  '/about': typeof AppPublicAboutRoute
-  '/contact': typeof AppPublicContactRoute
   '/auth/error': typeof AuthAuthErrorRoute
   '/password/reset': typeof AuthPasswordResetRoute
   '/password': typeof AuthPasswordIndexRoute
@@ -127,10 +95,6 @@ export interface FileRoutesById {
   '/_auth/register': typeof AuthRegisterRoute
   '/_app/': typeof AppIndexRoute
   '/_app/_protected/$pageId': typeof AppProtectedPageIdRoute
-  '/_app/_protected/profile': typeof AppProtectedProfileRoute
-  '/_app/_protected/settings': typeof AppProtectedSettingsRoute
-  '/_app/_public/about': typeof AppPublicAboutRoute
-  '/_app/_public/contact': typeof AppPublicContactRoute
   '/_auth/auth/error': typeof AuthAuthErrorRoute
   '/_auth/password/reset': typeof AuthPasswordResetRoute
   '/_auth/password/': typeof AuthPasswordIndexRoute
@@ -142,10 +106,6 @@ export interface FileRouteTypes {
     | '/register'
     | '/'
     | '/$pageId'
-    | '/profile'
-    | '/settings'
-    | '/about'
-    | '/contact'
     | '/auth/error'
     | '/password/reset'
     | '/password'
@@ -155,10 +115,6 @@ export interface FileRouteTypes {
     | '/register'
     | '/'
     | '/$pageId'
-    | '/profile'
-    | '/settings'
-    | '/about'
-    | '/contact'
     | '/auth/error'
     | '/password/reset'
     | '/password'
@@ -171,10 +127,6 @@ export interface FileRouteTypes {
     | '/_auth/register'
     | '/_app/'
     | '/_app/_protected/$pageId'
-    | '/_app/_protected/profile'
-    | '/_app/_protected/settings'
-    | '/_app/_public/about'
-    | '/_app/_public/contact'
     | '/_auth/auth/error'
     | '/_auth/password/reset'
     | '/_auth/password/'
@@ -250,34 +202,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthAuthErrorRouteImport
       parentRoute: typeof AuthLayoutRoute
     }
-    '/_app/_public/contact': {
-      id: '/_app/_public/contact'
-      path: '/contact'
-      fullPath: '/contact'
-      preLoaderRoute: typeof AppPublicContactRouteImport
-      parentRoute: typeof AppLayoutRoute
-    }
-    '/_app/_public/about': {
-      id: '/_app/_public/about'
-      path: '/about'
-      fullPath: '/about'
-      preLoaderRoute: typeof AppPublicAboutRouteImport
-      parentRoute: typeof AppLayoutRoute
-    }
-    '/_app/_protected/settings': {
-      id: '/_app/_protected/settings'
-      path: '/settings'
-      fullPath: '/settings'
-      preLoaderRoute: typeof AppProtectedSettingsRouteImport
-      parentRoute: typeof AppProtectedLayoutRoute
-    }
-    '/_app/_protected/profile': {
-      id: '/_app/_protected/profile'
-      path: '/profile'
-      fullPath: '/profile'
-      preLoaderRoute: typeof AppProtectedProfileRouteImport
-      parentRoute: typeof AppProtectedLayoutRoute
-    }
     '/_app/_protected/$pageId': {
       id: '/_app/_protected/$pageId'
       path: '/$pageId'
@@ -290,14 +214,10 @@ declare module '@tanstack/react-router' {
 
 interface AppProtectedLayoutRouteChildren {
   AppProtectedPageIdRoute: typeof AppProtectedPageIdRoute
-  AppProtectedProfileRoute: typeof AppProtectedProfileRoute
-  AppProtectedSettingsRoute: typeof AppProtectedSettingsRoute
 }
 
 const AppProtectedLayoutRouteChildren: AppProtectedLayoutRouteChildren = {
   AppProtectedPageIdRoute: AppProtectedPageIdRoute,
-  AppProtectedProfileRoute: AppProtectedProfileRoute,
-  AppProtectedSettingsRoute: AppProtectedSettingsRoute,
 }
 
 const AppProtectedLayoutRouteWithChildren =
@@ -306,15 +226,11 @@ const AppProtectedLayoutRouteWithChildren =
 interface AppLayoutRouteChildren {
   AppProtectedLayoutRoute: typeof AppProtectedLayoutRouteWithChildren
   AppIndexRoute: typeof AppIndexRoute
-  AppPublicAboutRoute: typeof AppPublicAboutRoute
-  AppPublicContactRoute: typeof AppPublicContactRoute
 }
 
 const AppLayoutRouteChildren: AppLayoutRouteChildren = {
   AppProtectedLayoutRoute: AppProtectedLayoutRouteWithChildren,
   AppIndexRoute: AppIndexRoute,
-  AppPublicAboutRoute: AppPublicAboutRoute,
-  AppPublicContactRoute: AppPublicContactRoute,
 }
 
 const AppLayoutRouteWithChildren = AppLayoutRoute._addFileChildren(
