@@ -135,18 +135,21 @@ const main = async (): Promise<void> => {
         id: crypto.randomUUID(),
         type: 'text',
         value: 'This is a demo note from the test account.',
+        order: 0,
         pageId: pageId,
       })
       await db.insert(nodeTable).values({
         id: crypto.randomUUID(),
         type: 'text',
         value: 'This is a demo note2 from the test account.',
+        order: 0,
         pageId: pageId2,
       })
       await db.insert(nodeTable).values({
         id: crypto.randomUUID(),
         type: 'text',
         value: 'This is a demo note3 from the test account.',
+        order: 1,
         pageId: pageId2,
       })
 

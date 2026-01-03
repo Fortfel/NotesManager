@@ -31,6 +31,7 @@ export const node = mysqlTable('node', (t) => ({
   id: t.varchar({ length: 36 }).primaryKey(),
   type: t.mysqlEnum(nodeTypes).notNull(),
   value: t.text().notNull(),
+  order: t.int().notNull().default(0),
   pageId: t
     .varchar({ length: 36 })
     .notNull()
@@ -60,6 +61,7 @@ export const nodeInsertSchema = createInsertSchema(node, {
   pageId: z.uuid(),
   type: z.enum(nodeTypes),
   value: z.string(),
+  order: z.number().int(),
 })
 
 // Relations

@@ -1,7 +1,7 @@
 import type { TRPCRouterRecord } from '@trpc/server'
 import { z } from 'zod/v4'
 
-import { and, desc, eq } from '@workspace/db'
+import { and, asc, desc, eq } from '@workspace/db'
 import { node, nodeInsertSchema, page, pageInsertSchema } from '@workspace/db/schema'
 
 import { protectedProcedure, publicProcedure } from '../trpc'
@@ -22,7 +22,9 @@ export const noteRouter = {
         limit: input.limit,
         offset: input.offset,
         with: {
-          nodes: true,
+          nodes: {
+            orderBy: asc(node.order),
+          },
         },
       })
     }),
@@ -32,7 +34,9 @@ export const noteRouter = {
     return ctx.db.query.page.findFirst({
       where: and(eq(page.id, input.id), eq(page.userId, ctx.session.session.userId)),
       with: {
-        nodes: true,
+        nodes: {
+          orderBy: asc(node.order),
+        },
       },
     })
   }),
@@ -42,7 +46,9 @@ export const noteRouter = {
     return ctx.db.query.page.findFirst({
       where: eq(page.slug, input.slug),
       with: {
-        nodes: true,
+        nodes: {
+          orderBy: asc(node.order),
+        },
       },
     })
   }),
@@ -51,7 +57,7 @@ export const noteRouter = {
   create: protectedProcedure
     .input(
       z.object({
-        page: pageInsertSchema,
+        page: pageInsertSchema.omit({ userId: true }),
         nodes: z.array(nodeInsertSchema).optional(),
       }),
     )
