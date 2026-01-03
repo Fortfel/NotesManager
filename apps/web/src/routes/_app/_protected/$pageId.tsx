@@ -2,10 +2,12 @@ import type { DragEndEvent } from '@dnd-kit/core'
 import * as React from 'react'
 import { DndContext, DragOverlay, PointerSensor, useSensor, useSensors } from '@dnd-kit/core'
 import { arrayMove, SortableContext } from '@dnd-kit/sortable'
-import { useQuery } from '@tanstack/react-query'
-import { createFileRoute, notFound, rootRouteId } from '@tanstack/react-router'
-import { nanoid } from 'nanoid'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { createFileRoute, Link, notFound, rootRouteId } from '@tanstack/react-router'
+import { ArrowLeft, Save } from 'lucide-react'
 import { useImmer } from 'use-immer'
+
+import { Button } from '@workspace/ui/components/button'
 
 import { useFocusedNodeIndex } from '@/hooks/use-focused-node-index'
 import { trpcClient } from '@/lib/trpc-client'
@@ -32,7 +34,22 @@ export const Route = createFileRoute('/_app/_protected/$pageId')({
 
 function RouteComponent() {
   const { pageId } = Route.useParams()
+  const queryClient = useQueryClient()
   const pageQuery = useQuery(trpcClient.notes.byId.queryOptions({ id: pageId }))
+  const updatePageMutation = useMutation({
+    ...trpcClient.notes.update.mutationOptions(),
+    onSuccess: () => {
+      void queryClient.invalidateQueries({ queryKey: [['notes', 'byId']] })
+    },
+  })
+  const updateNodesMutation = useMutation({
+    ...trpcClient.notes.updateNodes.mutationOptions(),
+    onSuccess: () => {
+      void queryClient.invalidateQueries({ queryKey: [['notes', 'byId']] })
+    },
+  })
+
+  const commandPanelOpenRef = React.useRef(false)
 
   // Local state for editing with useImmer
   const [localPage, setLocalPage] = useImmer<typeof pageQuery.data>(undefined)
@@ -41,7 +58,10 @@ function RouteComponent() {
   const title = localPage?.title ?? ''
   const nodes = localPage?.nodes ?? []
 
-  const [focusedNodeIndex, setFocusedNodeIndex] = useFocusedNodeIndex({ nodes })
+  const [focusedNodeIndex, setFocusedNodeIndex] = useFocusedNodeIndex({
+    nodes,
+    shouldIgnoreKeys: () => commandPanelOpenRef.current,
+  })
 
   const sensors = useSensors(
     useSensor(PointerSensor, {
@@ -76,10 +96,11 @@ function RouteComponent() {
 
         const newNode = {
           ...node,
-          id: nanoid(),
+          id: crypto.randomUUID(),
           pageId: pageId,
           type: node.type || 'text',
           value: node.value,
+          order: index ?? 0,
         } satisfies (typeof nodes)[number]
 
         if (index !== undefined && index >= 0) {
@@ -174,6 +195,36 @@ function RouteComponent() {
     [setLocalPage],
   )
 
+  // Destructure the mutate functions
+  const { mutate: updatePage } = updatePageMutation
+  const { mutate: updateNodes } = updateNodesMutation
+
+  const handleSave = React.useCallback(() => {
+    if (!localPage) return
+
+    // Update page metadata
+    updatePage({
+      id: pageId,
+      title: localPage.title,
+      slug: localPage.slug,
+      cover: localPage.cover || '',
+    })
+
+    // Update nodes
+    updateNodes({
+      pageId,
+      nodes: localPage.nodes.map((node, index) => ({
+        id: node.id,
+        type: node.type,
+        value: node.value,
+        pageId: node.pageId,
+        order: index,
+      })),
+    })
+  }, [localPage, pageId, updatePage, updateNodes])
+
+  const isSaving = updatePageMutation.isPending || updateNodesMutation.isPending
+
   if (pageQuery.isLoading) return <div>Loading...</div>
   if (pageQuery.isError) return <div>Error: {pageQuery.error.message}</div>
   if (!localPage) return <div>Page not found</div>
@@ -195,6 +246,7 @@ function RouteComponent() {
                 updateFocusedIndex={setFocusedNodeIndex}
                 isFocused={focusedNodeIndex === index}
                 index={index}
+                commandPanelOpenRef={commandPanelOpenRef}
               />
             </NodeContainer>
           ))}
@@ -205,6 +257,20 @@ function RouteComponent() {
       {/* eslint-disable-next-line jsx-a11y/click-events-have-key-events */}
       <div role="button" tabIndex={0} onClick={handleSpacerClick}>
         {nodes.length === 0 && <p>Click to create the first paragraph.</p>}
+      </div>
+
+      {/* Actions */}
+      <div className="mt-6 flex items-center gap-2">
+        <Button asChild variant="outline">
+          <Link to="/">
+            <ArrowLeft className="size-4" />
+            Back
+          </Link>
+        </Button>
+        <Button onClick={handleSave} disabled={isSaving}>
+          <Save className="size-4" />
+          {isSaving ? 'Saving...' : 'Save'}
+        </Button>
       </div>
     </div>
   )

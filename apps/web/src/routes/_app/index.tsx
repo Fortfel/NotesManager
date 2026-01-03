@@ -1,7 +1,7 @@
 import type * as React from 'react'
-import { useQuery } from '@tanstack/react-query'
-import { createFileRoute, Link } from '@tanstack/react-router'
-import { MoreVerticalIcon, Trash2Icon } from 'lucide-react'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { createFileRoute, Link, useNavigate } from '@tanstack/react-router'
+import { MoreVerticalIcon, PlusIcon, Trash2Icon } from 'lucide-react'
 
 import { Button } from '@workspace/ui/components/button'
 import {
@@ -45,12 +45,49 @@ export const Route = createFileRoute('/_app/')({
 
 function HomeComponent(): React.JSX.Element {
   const { data: session, isPending } = authClient.useSession()
+  const queryClient = useQueryClient()
+  const navigate = useNavigate()
 
   const pagesQuery = useQuery({
     ...trpcClient.notes.all.queryOptions({ limit: 20, offset: 0 }),
     enabled: !!session?.user, // Only fetch if user is authenticated
   })
   const pages = pagesQuery.data ?? []
+
+  const createPageMutation = useMutation({
+    ...trpcClient.notes.create.mutationOptions(),
+    onSuccess: (data) => {
+      void queryClient.invalidateQueries({ queryKey: [['notes', 'all']] })
+      void navigate({ ...pageLinkOptions(data.id) })
+    },
+  })
+
+  const deletePageMutation = useMutation({
+    ...trpcClient.notes.delete.mutationOptions(),
+    onSuccess: () => {
+      void queryClient.invalidateQueries({ queryKey: [['notes', 'all']] })
+    },
+  })
+
+  const handleCreatePage = () => {
+    const pageId = crypto.randomUUID()
+    createPageMutation.mutate({
+      page: {
+        id: crypto.randomUUID(),
+        slug: `page-${pageId.slice(0, 8)}`,
+        title: 'Untitled',
+        cover: '',
+      },
+    })
+  }
+
+  const handleDeletePage = (pageId: string, e: React.MouseEvent) => {
+    e.preventDefault()
+    e.stopPropagation()
+    if (confirm('Are you sure you want to delete this page?')) {
+      deletePageMutation.mutate(pageId)
+    }
+  }
 
   if (isPending || pagesQuery.isLoading) {
     return (
@@ -61,7 +98,7 @@ function HomeComponent(): React.JSX.Element {
   }
 
   if (!session?.user) {
-    return <div>Please log in</div>
+    return <div>Please log in. Test credentials alert and so on...</div>
   }
 
   if (pagesQuery.error) {
@@ -93,14 +130,12 @@ function HomeComponent(): React.JSX.Element {
                   <DropdownMenuContent>
                     <DropdownMenuGroup>
                       <DropdownMenuItem
-                        onClick={(e) => {
-                          e.preventDefault()
-                          console.log('Delete')
-                        }}
+                        onClick={(e) => handleDeletePage(page.id, e)}
                         className="text-destructive flex items-center gap-2"
+                        disabled={deletePageMutation.isPending}
                       >
                         <Trash2Icon className="text-destructive size-4" />
-                        Delete
+                        {deletePageMutation.isPending ? 'Deleting...' : 'Delete'}
                       </DropdownMenuItem>
                     </DropdownMenuGroup>
                   </DropdownMenuContent>
@@ -109,8 +144,15 @@ function HomeComponent(): React.JSX.Element {
             </Link>
           </Item>
         ))}
-        <Button variant="outline" size="lg" className="w-fit">
-          Create New Page
+        <Button
+          variant="outline"
+          size="lg"
+          className="w-fit"
+          onClick={handleCreatePage}
+          disabled={createPageMutation.isPending}
+        >
+          <PlusIcon className="size-4" />
+          {createPageMutation.isPending ? 'Creating...' : 'Create New Page'}
         </Button>
       </div>
     </div>

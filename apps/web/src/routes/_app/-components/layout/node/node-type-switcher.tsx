@@ -12,6 +12,7 @@ type NodeTypeSwitcherProps = {
   updateFocusedIndex: (index: number) => void
   isFocused: boolean
   index: number
+  commandPanelOpenRef: React.RefObject<boolean>
 }
 
 const TEXT_NODE_TYPES = new Set<NodeOutput['type']>(['text', 'list', 'heading1', 'heading2', 'heading3'])
@@ -25,6 +26,7 @@ export const NodeTypeSwitcher = ({
   isFocused,
   index,
   updateFocusedIndex,
+  commandPanelOpenRef,
 }: NodeTypeSwitcherProps) => {
   if (TEXT_NODE_TYPES.has(node.type)) {
     return (
@@ -37,6 +39,7 @@ export const NodeTypeSwitcher = ({
         updateNodeType={updateNodeType}
         addNode={addNode}
         removeNode={removeNode}
+        commandPanelOpenRef={commandPanelOpenRef}
       />
     )
   }
