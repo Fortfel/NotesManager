@@ -1,8 +1,9 @@
 import type * as React from 'react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { createFileRoute, Link, useNavigate } from '@tanstack/react-router'
-import { MoreVerticalIcon, PlusIcon, Trash2Icon } from 'lucide-react'
+import { AlertCircleIcon, MoreVerticalIcon, PlusIcon, Trash2Icon } from 'lucide-react'
 
+import { Alert, AlertDescription, AlertTitle } from '@workspace/ui/components/alert'
 import { Button } from '@workspace/ui/components/button'
 import {
   DropdownMenu,
@@ -48,6 +49,8 @@ function HomeComponent(): React.JSX.Element {
   const queryClient = useQueryClient()
   const navigate = useNavigate()
 
+  const isTestUser = session?.user.email === 'demo@example.com'
+
   const pagesQuery = useQuery({
     ...trpcClient.notes.all.queryOptions({ limit: 20, offset: 0 }),
     enabled: !!session?.user, // Only fetch if user is authenticated
@@ -70,6 +73,10 @@ function HomeComponent(): React.JSX.Element {
   })
 
   const handleCreatePage = () => {
+    if (isTestUser) {
+      alert('You are not allowed to create pages as a test user')
+      return
+    }
     const pageId = crypto.randomUUID()
     createPageMutation.mutate({
       page: {
@@ -84,6 +91,11 @@ function HomeComponent(): React.JSX.Element {
   const handleDeletePage = (pageId: string, e: React.MouseEvent) => {
     e.preventDefault()
     e.stopPropagation()
+
+    if (isTestUser) {
+      alert('You are not allowed to delete pages as a test user')
+      return
+    }
     if (confirm('Are you sure you want to delete this page?')) {
       deletePageMutation.mutate(pageId)
     }
@@ -98,7 +110,20 @@ function HomeComponent(): React.JSX.Element {
   }
 
   if (!session?.user) {
-    return <div>Please log in. Test credentials alert and so on...</div>
+    return (
+      <div>
+        Please log in.
+        <Alert variant="info" className="mt-4">
+          <AlertCircleIcon />
+          <AlertTitle>Test credentials:</AlertTitle>
+          <AlertDescription>
+            <span>
+              <strong>demo@example.com</strong> / <strong>secretPassword</strong>
+            </span>
+          </AlertDescription>
+        </Alert>
+      </div>
+    )
   }
 
   if (pagesQuery.error) {

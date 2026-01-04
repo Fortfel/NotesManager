@@ -10,6 +10,7 @@ import { useImmer } from 'use-immer'
 import { Button } from '@workspace/ui/components/button'
 
 import { useFocusedNodeIndex } from '@/hooks/use-focused-node-index'
+import { authClient } from '@/lib/auth-client'
 import { trpcClient } from '@/lib/trpc-client'
 import { Cover } from '@/routes/_app/-components/layout/cover'
 import { NodeContainer } from '@/routes/_app/-components/layout/node/node-container'
@@ -34,6 +35,10 @@ export const Route = createFileRoute('/_app/_protected/$pageId')({
 
 function RouteComponent() {
   const { pageId } = Route.useParams()
+  const { data: session } = authClient.useSession()
+
+  const isTestUser = session?.user.email === 'demo@example.com'
+
   const queryClient = useQueryClient()
   const pageQuery = useQuery(trpcClient.notes.byId.queryOptions({ id: pageId }))
   const updatePageMutation = useMutation({
@@ -201,6 +206,10 @@ function RouteComponent() {
 
   const handleSave = React.useCallback(() => {
     if (!localPage) return
+    if (isTestUser) {
+      alert('You are not allowed to save pages as a test user')
+      return
+    }
 
     // Update page metadata
     updatePage({
@@ -221,7 +230,7 @@ function RouteComponent() {
         order: index,
       })),
     })
-  }, [localPage, pageId, updatePage, updateNodes])
+  }, [localPage, pageId, updatePage, updateNodes, isTestUser])
 
   const isSaving = updatePageMutation.isPending || updateNodesMutation.isPending
 
