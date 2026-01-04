@@ -18,14 +18,6 @@ export const loginLinkOptions = linkOptions({
   // search: authSearchParamsDefaults,
 })
 
-export const registerLinkOptions = linkOptions({
-  to: '/register',
-})
-
-export const passwordResetLinkOptions = linkOptions({
-  to: '/password/reset',
-})
-
 export const authErrorLinkOptions = linkOptions({
   to: '/auth/error',
 })

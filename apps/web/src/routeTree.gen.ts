@@ -12,11 +12,9 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as AuthLayoutRouteImport } from './routes/_auth/layout'
 import { Route as AppLayoutRouteImport } from './routes/_app/layout'
 import { Route as AppIndexRouteImport } from './routes/_app/index'
-import { Route as AuthRegisterRouteImport } from './routes/_auth/register'
 import { Route as AuthLoginRouteImport } from './routes/_auth/login'
 import { Route as AppProtectedLayoutRouteImport } from './routes/_app/_protected/layout'
 import { Route as AuthPasswordIndexRouteImport } from './routes/_auth/password.index'
-import { Route as AuthPasswordResetRouteImport } from './routes/_auth/password.reset'
 import { Route as AuthAuthErrorRouteImport } from './routes/_auth/auth.error'
 import { Route as AppProtectedPageIdRouteImport } from './routes/_app/_protected/$pageId'
 
@@ -33,11 +31,6 @@ const AppIndexRoute = AppIndexRouteImport.update({
   path: '/',
   getParentRoute: () => AppLayoutRoute,
 } as any)
-const AuthRegisterRoute = AuthRegisterRouteImport.update({
-  id: '/register',
-  path: '/register',
-  getParentRoute: () => AuthLayoutRoute,
-} as any)
 const AuthLoginRoute = AuthLoginRouteImport.update({
   id: '/login',
   path: '/login',
@@ -50,11 +43,6 @@ const AppProtectedLayoutRoute = AppProtectedLayoutRouteImport.update({
 const AuthPasswordIndexRoute = AuthPasswordIndexRouteImport.update({
   id: '/password/',
   path: '/password/',
-  getParentRoute: () => AuthLayoutRoute,
-} as any)
-const AuthPasswordResetRoute = AuthPasswordResetRouteImport.update({
-  id: '/password/reset',
-  path: '/password/reset',
   getParentRoute: () => AuthLayoutRoute,
 } as any)
 const AuthAuthErrorRoute = AuthAuthErrorRouteImport.update({
@@ -70,20 +58,16 @@ const AppProtectedPageIdRoute = AppProtectedPageIdRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/login': typeof AuthLoginRoute
-  '/register': typeof AuthRegisterRoute
   '/': typeof AppIndexRoute
   '/$pageId': typeof AppProtectedPageIdRoute
   '/auth/error': typeof AuthAuthErrorRoute
-  '/password/reset': typeof AuthPasswordResetRoute
   '/password': typeof AuthPasswordIndexRoute
 }
 export interface FileRoutesByTo {
   '/login': typeof AuthLoginRoute
-  '/register': typeof AuthRegisterRoute
   '/': typeof AppIndexRoute
   '/$pageId': typeof AppProtectedPageIdRoute
   '/auth/error': typeof AuthAuthErrorRoute
-  '/password/reset': typeof AuthPasswordResetRoute
   '/password': typeof AuthPasswordIndexRoute
 }
 export interface FileRoutesById {
@@ -92,43 +76,25 @@ export interface FileRoutesById {
   '/_auth': typeof AuthLayoutRouteWithChildren
   '/_app/_protected': typeof AppProtectedLayoutRouteWithChildren
   '/_auth/login': typeof AuthLoginRoute
-  '/_auth/register': typeof AuthRegisterRoute
   '/_app/': typeof AppIndexRoute
   '/_app/_protected/$pageId': typeof AppProtectedPageIdRoute
   '/_auth/auth/error': typeof AuthAuthErrorRoute
-  '/_auth/password/reset': typeof AuthPasswordResetRoute
   '/_auth/password/': typeof AuthPasswordIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths:
-    | '/login'
-    | '/register'
-    | '/'
-    | '/$pageId'
-    | '/auth/error'
-    | '/password/reset'
-    | '/password'
+  fullPaths: '/login' | '/' | '/$pageId' | '/auth/error' | '/password'
   fileRoutesByTo: FileRoutesByTo
-  to:
-    | '/login'
-    | '/register'
-    | '/'
-    | '/$pageId'
-    | '/auth/error'
-    | '/password/reset'
-    | '/password'
+  to: '/login' | '/' | '/$pageId' | '/auth/error' | '/password'
   id:
     | '__root__'
     | '/_app'
     | '/_auth'
     | '/_app/_protected'
     | '/_auth/login'
-    | '/_auth/register'
     | '/_app/'
     | '/_app/_protected/$pageId'
     | '/_auth/auth/error'
-    | '/_auth/password/reset'
     | '/_auth/password/'
   fileRoutesById: FileRoutesById
 }
@@ -160,13 +126,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppIndexRouteImport
       parentRoute: typeof AppLayoutRoute
     }
-    '/_auth/register': {
-      id: '/_auth/register'
-      path: '/register'
-      fullPath: '/register'
-      preLoaderRoute: typeof AuthRegisterRouteImport
-      parentRoute: typeof AuthLayoutRoute
-    }
     '/_auth/login': {
       id: '/_auth/login'
       path: '/login'
@@ -186,13 +145,6 @@ declare module '@tanstack/react-router' {
       path: '/password'
       fullPath: '/password'
       preLoaderRoute: typeof AuthPasswordIndexRouteImport
-      parentRoute: typeof AuthLayoutRoute
-    }
-    '/_auth/password/reset': {
-      id: '/_auth/password/reset'
-      path: '/password/reset'
-      fullPath: '/password/reset'
-      preLoaderRoute: typeof AuthPasswordResetRouteImport
       parentRoute: typeof AuthLayoutRoute
     }
     '/_auth/auth/error': {
@@ -239,17 +191,13 @@ const AppLayoutRouteWithChildren = AppLayoutRoute._addFileChildren(
 
 interface AuthLayoutRouteChildren {
   AuthLoginRoute: typeof AuthLoginRoute
-  AuthRegisterRoute: typeof AuthRegisterRoute
   AuthAuthErrorRoute: typeof AuthAuthErrorRoute
-  AuthPasswordResetRoute: typeof AuthPasswordResetRoute
   AuthPasswordIndexRoute: typeof AuthPasswordIndexRoute
 }
 
 const AuthLayoutRouteChildren: AuthLayoutRouteChildren = {
   AuthLoginRoute: AuthLoginRoute,
-  AuthRegisterRoute: AuthRegisterRoute,
   AuthAuthErrorRoute: AuthAuthErrorRoute,
-  AuthPasswordResetRoute: AuthPasswordResetRoute,
   AuthPasswordIndexRoute: AuthPasswordIndexRoute,
 }
 

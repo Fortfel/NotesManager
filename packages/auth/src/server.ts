@@ -127,6 +127,7 @@ export const initAuth = (options: AuthConfig) => {
       requireEmailVerification: false,
       minPasswordLength: AUTH_CONFIG.PASSWORD_MIN_LENGTH,
       maxPasswordLength: AUTH_CONFIG.PASSWORD_MAX_LENGTH,
+      disableSignUp: true,
     },
 
     socialProviders: {
@@ -145,7 +146,7 @@ export const initAuth = (options: AuthConfig) => {
     },
 
     onAPIError: {
-      errorURL: 'http://localhost:3046/auth/error',
+      errorURL: `${options.webUrl}/auth/error`,
     },
 
     hooks: {

@@ -1,15 +1,13 @@
 import * as React from 'react'
-import { Link } from '@tanstack/react-router'
 import { useStore } from '@tanstack/react-store'
 
 import { authSchema, getErrorMessage } from '@workspace/auth/client'
-import { Field, FieldDescription, FieldGroup } from '@workspace/ui/components/field'
+import { Field, FieldGroup } from '@workspace/ui/components/field'
 import { cn } from '@workspace/ui/lib/utils'
 
 import { revalidateLogic, useAppForm } from '@/hooks/use-app-form'
 import { useAuthFormStore } from '@/hooks/use-auth-form-store'
 import { authClient } from '@/lib/auth-client'
-import { passwordResetLinkOptions, registerLinkOptions } from '@/routes/_auth/-validations/auth-link-options'
 
 const formSchema = authSchema.loginSchema
 
@@ -95,25 +93,12 @@ const LoginForm = ({
 
             <form.AppField name="password">
               {(field) => (
-                <field.PasswordField
-                  label="Password"
-                  labelRight={
-                    <Link {...passwordResetLinkOptions} className="text-sm underline-offset-4 hover:underline">
-                      Forgot your password?
-                    </Link>
-                  }
-                  placeholder="Enter your password"
-                  autoComplete="off"
-                  required
-                />
+                <field.PasswordField label="Password" placeholder="Enter your password" autoComplete="off" required />
               )}
             </form.AppField>
 
             <Field>
               <form.SubscribeButton label="Login" isPending={isSocialPending} gradient={'normal'} />
-              <FieldDescription className="text-center">
-                Don&apos;t have an account? <Link {...registerLinkOptions}>Sign up</Link>
-              </FieldDescription>
             </Field>
           </FieldGroup>
         </form>
