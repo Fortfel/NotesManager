@@ -1,8 +1,8 @@
-# Monorepo Reference Guide
+# NotesManager
 
 ## 🏗️ Architecture Overview
 
-This is a **full-stack TypeScript monorepo** built with **Turborepo** for efficient build orchestration and caching.
+**NotesManager** is a full-stack TypeScript note-taking application built as a monorepo with **Turborepo**. It features a Notion-like interface with drag-and-drop node editing ans user authentication.
 
 ## 📁 Project Structure
 
@@ -14,7 +14,6 @@ This is a **full-stack TypeScript monorepo** built with **Turborepo** for effici
 │   ├── api/              # tRPC API definitions & routers
 │   ├── auth/             # Better Auth configuration
 │   ├── db/               # Drizzle ORM + MySQL
-│   ├── i18n/             # Internationalization with Paraglide JS
 │   ├── ui/               # Shadcn/ui component library with theming
 │   └── validators/       # Zod validation schemas
 ├── tooling/
@@ -23,6 +22,17 @@ This is a **full-stack TypeScript monorepo** built with **Turborepo** for effici
 │   └── typescript/       # Shared TypeScript configurations
 └── [config files]
 ```
+
+## ✨ Features
+
+- **📝 Notion-like Editor**: Create and edit notes with multiple node types (text, headings, lists)
+- **🎯 Drag & Drop**: Reorder nodes with smooth drag-and-drop interactions using dnd-kit
+- **🔐 Authentication**: Secure user authentication with Better Auth (email/password)
+- **👤 User Management**: Personal note spaces with user-specific content
+- **🎨 Modern UI**: Beautiful interface built with Shadcn/ui and Tailwind CSS v4
+- **🌙 Dark Mode**: Full dark mode support with theme switching
+- **📱 Responsive**: Works seamlessly on desktop and mobile devices
+- **🚀 Type-safe**: End-to-end type safety with TypeScript and tRPC
 
 ## 🚀 Tech Stack
 
@@ -34,10 +44,9 @@ This is a **full-stack TypeScript monorepo** built with **Turborepo** for effici
 - **TanStack Router** for file-based routing
 - **TanStack Query** for server state management
 - **tRPC** for type-safe API calls
-- **Zustand** for client state management
+- **@dnd-kit** for drag-and-drop functionality
 - **Shadcn/ui** components from `@workspace/ui`
 - **next-themes** for theme switching
-- **Paraglide JS** for internationalization
 
 ### **Backend** (`apps/fastify/`)
 
@@ -54,6 +63,11 @@ This is a **full-stack TypeScript monorepo** built with **Turborepo** for effici
 - **Drizzle Kit** for migrations and studio
 - **Drizzle Seed** for database seeding
 
+**Schema:**
+- `user` - User accounts (managed by Better Auth)
+- `page` - Note pages with title, slug, and cover
+- `node` - Individual content blocks within pages (text, headings, lists)
+
 ### **Authentication** (`packages/auth/`)
 
 - **Better Auth** with Drizzle adapter
@@ -64,8 +78,7 @@ This is a **full-stack TypeScript monorepo** built with **Turborepo** for effici
 
 - **UI Components** (`packages/ui/`): Shadcn/ui with CVA, Lucide icons, theme support
 - **Validators** (`packages/validators/`): Zod schemas
-- **API** (`packages/api/`): tRPC definitions & routers
-- **Internationalization** (`packages/i18n/`): Paraglide JS for i18n
+- **API** (`packages/api/`): tRPC definitions & routers for notes management
 
 ### **Development Tools**
 
@@ -122,28 +135,6 @@ turbo build --filter=fastify
 ```
 
 ## 🚀 Production Build & Deployment
-
-### **Frontend Deployment (GitHub Pages)**
-
-To deploy the frontend to GitHub Pages:
-
-1. **Set environment variable** - Uncomment/add in `apps/web/.env`:
-
-   ```bash
-   PUBLIC_BASE_PATH=/repository-name/
-   ```
-
-   Replace `repository-name` with your actual GitHub repository name (case sensitive).
-
-2. **Configure GitHub repository secrets** - Add all required environment variables in:
-   - Repository → Settings → Secrets and variables → Actions
-   - Add variables like `PUBLIC_SERVER_URL`, `PUBLIC_SERVER_API_PATH`, `PUBLIC_BASE_PATH`, etc.
-
-3. **Configure `.github/workflows/deploy.yml`** - configure the workflow.
-
-4. **Build and deploy** - The Vite build will use the base path for proper asset loading on GitHub Pages.
-
-> **Note:** Remember that GitHub Pages serves static files only. The frontend will need to connect to your separately deployed backend API.
 
 ### **Build Configuration**
 
@@ -263,29 +254,34 @@ pnpm --filter=fastify build
 
 1. Install dependencies: `pnpm install`
 2. Set up environment variables (copy `.env.example` files)
-3. Generate better-auth schema: `pnpm auth:schema:generate`
-4. Generate database schema: `pnpm db:generate`
-5. Migrate schema to database: `pnpm db:migrate`
-6. Seed database: `pnpm db:seed`
-7. Build type declarations in packages: `pnpm build`
-8. Start development: `pnpm dev`
+3. Start MySQL database: `docker-compose up -d` (or use your own MySQL instance)
+4. Generate better-auth schema: `pnpm auth:schema:generate`
+5. Generate database schema: `pnpm db:generate`
+6. Push schema to database: `pnpm db:push`
+7. Seed database with test user: `pnpm db:seed`
+8. Build type declarations in packages: `pnpm build`
+9. Start development: `pnpm dev`
+
+**Test Credentials:**
+- Email: `demo@example.com`
+- Password: `secretPassword`
 
 ### **Adding New Features**
 
 1. **UI Components**: Run `pnpm ui-add` from root (targets web app)
-2. **Database Schema**: Modify `packages/db/src/schemas/schema.ts`
-3. **API Routes**: Add tRPC routers to `packages/api/src/server/`
+2. **Database Schema**: Modify `packages/db/src/schemas/notes.ts` or `packages/db/src/schemas/auth.ts`
+3. **API Routes**: Add tRPC routers to `packages/api/src/server/routers/`
 4. **Validation**: Add schemas to `packages/validators/src/`
 5. **Frontend Pages**: Add routes to `apps/web/src/routes/`
-6. **Translations**: Add messages to `packages/i18n/messages/`
+6. **Node Types**: Add new node types to `packages/db/src/schemas/notes.ts` and implement in frontend
 
 ### **Database Changes**
 
-1. Modify schema in `packages/db/src/schemas/schema.ts`
+1. Modify schema in `packages/db/src/schemas/notes.ts` or `packages/db/src/schemas/auth.ts`
 2. Generate migration: `pnpm db:generate`
 3. Apply migration: `pnpm db:migrate` or `pnpm db:push`
 4. Update seed data if needed: `packages/db/src/seed/seed.ts`
-5. Regenerate auth schema if needed: `pnpm auth:schema:generate`
+5. Regenerate auth schema if auth tables changed: `pnpm auth:schema:generate`
 
 ## 🎯 Important Notes
 
@@ -357,7 +353,7 @@ The Fastify backend uses **Node.js subpath imports** for clean internal module r
 5. **Type Errors**: Ensure all packages are built with `pnpm build`
 6. **Production Build**: Must include `noExternal: ['@workspace/*']` in tsup config to bundle workspace packages
 7. **Theme Issues**: Ensure Tailwind CSS is configured with `darkMode: 'class'` for theme switching
-8. **i18n Setup**: Run paraglide compilation before development for message generation
+8. **Database Connection**: Ensure MySQL is running and environment variables are set correctly
 9. **TypeScript Errors**: Can try to clean node_modules and reinstall/rebuild them (`pnpm clean && pnpm install && pnpm build`)
 
 ## 📚 Documentation Links
@@ -369,15 +365,7 @@ The Fastify backend uses **Node.js subpath imports** for clean internal module r
 - [tRPC](https://trpc.io/)
 - [Shadcn/ui](https://ui.shadcn.com/)
 - [Tailwind CSS v4](https://tailwindcss.com/docs)
+- [dnd-kit](https://docs.dndkit.com/)
+- [TanStack Router](https://tanstack.com/router/latest)
 
 ---
-
-## Taken inspiration from:
-
-- [rt-stack](https://github.com/nktnet1/rt-stack/tree/551fe2c6adf136f4f8adf04dfa70d88b8cd137e9)
-- [t3-turbo](https://github.com/t3-oss/create-t3-turbo/tree/dcf9c001dc853c929a3d467435e297a7480a36e1)
-- [Fullstack-SaaS-Boilerplate](https://github.com/alan345/Fullstack-SaaS-Boilerplate/tree/main)
-
----
-
-_This reference was last updated on 2025-09-20. Keep it updated as the project evolves._
