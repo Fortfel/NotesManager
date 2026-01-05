@@ -24,7 +24,7 @@ const Cover = ({ filePath, onCoverChange, className, ...props }: React.Component
   }
 
   return (
-    <div data-slot="cover" className={cn(className)} {...props}>
+    <div data-slot="cover" className={cn('group relative', className)} {...props}>
       {filePath ? (
         <img
           src={filePath}
@@ -39,7 +39,11 @@ const Cover = ({ filePath, onCoverChange, className, ...props }: React.Component
           className="max-h-[300px] w-full object-cover"
         />
       )}
-      <Button variant="outline" onClick={handleUploadClick}>
+      <Button
+        variant="outline"
+        onClick={handleUploadClick}
+        className="absolute bottom-2 left-1/2 -translate-x-1/2 opacity-0 transition-opacity group-hover:opacity-100"
+      >
         Upload
       </Button>
       <input type="file" ref={fileInputRef} onChange={handleCoverChange} className="hidden" />

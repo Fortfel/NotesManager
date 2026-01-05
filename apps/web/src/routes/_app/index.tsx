@@ -131,7 +131,21 @@ function HomeComponent(): React.JSX.Element {
   }
 
   if (pages.length === 0) {
-    return <p className="text-muted-foreground text-center">No pages found.</p>
+    return (
+      <div>
+        <p className="text-muted-foreground text-center">No pages found.</p>
+        <Button
+          variant="outline"
+          size="lg"
+          className="w-fit"
+          onClick={handleCreatePage}
+          disabled={createPageMutation.isPending}
+        >
+          <PlusIcon className="size-4" />
+          {createPageMutation.isPending ? 'Creating...' : 'Create New Page'}
+        </Button>
+      </div>
+    )
   }
 
   return (
