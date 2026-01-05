@@ -29,7 +29,7 @@ function RouteComponent() {
                   Try again
                 </Button>
               </Link>
-              <Link {...homeLinkOptions} className="flex-1">
+              <Link {...homeLinkOptions()} className="flex-1">
                 <Button variant="primary" className="w-full">
                   Return to Application
                 </Button>

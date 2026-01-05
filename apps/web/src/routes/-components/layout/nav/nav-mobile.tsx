@@ -51,7 +51,7 @@ const NavMobile = ({ isOpen, defaultOpen = false, onOpenChange, className, ...pr
         <SheetContent side="left" className={'w-xs'}>
           <SheetHeader className="-mb-2">
             <SheetTitle>
-              <Link {...homeLinkOptions} className={'w-fit'} aria-label="Todos - Go to homepage">
+              <Link {...homeLinkOptions({ withLabel: true })} className={'w-fit'}>
                 <Logo aria-hidden="true" />
               </Link>
             </SheetTitle>

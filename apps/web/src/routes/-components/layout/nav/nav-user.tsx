@@ -61,7 +61,7 @@ const NavUser = () => {
                 onClick={() => {
                   void authClient.signOut().then(() => {
                     if (isProtectedRoute) {
-                      void navigate({ ...homeLinkOptions, replace: true })
+                      void navigate({ ...homeLinkOptions(), replace: true })
                     }
                     void router.invalidate()
                   })

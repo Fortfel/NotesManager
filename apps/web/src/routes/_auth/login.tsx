@@ -40,7 +40,7 @@ function RouteComponent() {
   return (
     <div className={'bg-muted flex min-h-svh flex-col items-center justify-center gap-6 p-4 md:p-10'}>
       <div className={'flex w-full max-w-md flex-col gap-6'}>
-        <Link {...homeLinkOptions} className={'mx-auto w-fit'} aria-label="Todos - Go to homepage">
+        <Link {...homeLinkOptions({ withLabel: true })} className={'mx-auto w-fit'}>
           <Logo aria-hidden="true" />
         </Link>
 
@@ -81,7 +81,7 @@ function RouteComponent() {
           and <Link to={'.'}>Privacy Policy</Link>.
         </FieldDescription>
         <Button asChild variant="outline-ghost" className={'mr-auto'}>
-          <Link {...homeLinkOptions}>
+          <Link {...homeLinkOptions()}>
             <ChevronLeft /> Back to home
           </Link>
         </Button>

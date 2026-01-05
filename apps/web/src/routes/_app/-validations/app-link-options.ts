@@ -17,14 +17,17 @@ export const appParamsSchema = z.object({
 
 export type AppParams = z.infer<typeof appParamsSchema>
 
-export const homeLinkOptions = linkOptions({
-  to: '/',
+export const homeLinkOptions = ({ withLabel = false }: { withLabel?: boolean } = {}) =>
+  linkOptions({
+    to: '/',
 
-  /**
-   * If we want links to contain default values in the URL
-   */
-  // search: appSearchParamsDefaults,
-})
+    /**
+     * If we want links to contain default values in the URL
+     */
+    // search: appSearchParamsDefaults,
+
+    'aria-label': withLabel ? 'Go to homepage' : undefined,
+  })
 
 export const pageLinkOptions = (pageId: string) =>
   linkOptions({

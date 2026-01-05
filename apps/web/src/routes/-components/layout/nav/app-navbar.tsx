@@ -74,7 +74,7 @@ const AppNavbar = ({ height = '64px', className, ...props }: NavbarProps & React
               {/* Mobile Menu */}
               {!isDesktop && <NavMobile isOpen={isMenuOpen} onOpenChange={setIsMenuOpen} className={'sm:hidden'} />}
 
-              <Link {...homeLinkOptions} className={'w-fit'} aria-label="Todos - Go to homepage">
+              <Link {...homeLinkOptions({ withLabel: true })} className={'w-fit'}>
                 <Logo aria-hidden="true" />
               </Link>
             </div>
