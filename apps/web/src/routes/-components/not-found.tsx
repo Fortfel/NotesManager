@@ -20,7 +20,7 @@ const NotFound = () => {
           </p>
 
           <Link
-            {...homeLinkOptions}
+            {...homeLinkOptions()}
             className="mt-10 flex w-fit items-center justify-center gap-2 text-base font-semibold hover:text-white/90"
           >
             <ArrowLeft className="size-4" /> Back to home
