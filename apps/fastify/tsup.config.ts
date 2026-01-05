@@ -10,7 +10,7 @@ export default defineConfig({
   minify: true,
 
   // Bundle workspace packages but exclude external deps
-  noExternal: ['@workspace/api', '@workspace/auth', '@workspace/db', '@workspace/validators'],
+  noExternal: [/^@workspace\//],
 
   // External dependencies (don't bundle these)
   external: [

@@ -50,9 +50,15 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-turbo-
 
+      - name: Debug environment
+        run: |
+          echo "CI=$CI"
+          echo "npm_lifecycle_event=$npm_lifecycle_event"
+
       - name: Build web app
         run: pnpm turbo run build --filter=web
         env:
+          CI: true
           PUBLIC_SERVER_URL: ${{ vars.PUBLIC_SERVER_URL }}
           PUBLIC_SERVER_API_PATH: ${{ vars.PUBLIC_SERVER_API_PATH }}
           PUBLIC_BASE_PATH: ${{ vars.PUBLIC_BASE_PATH }}

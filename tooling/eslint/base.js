@@ -79,6 +79,7 @@ export const config = tseslint.config(
       'unicorn/no-nested-ternary': 'off',
       'unicorn/consistent-function-scoping': 'off',
       'unicorn/prefer-top-level-await': 'off',
+      'unicorn/no-abusive-eslint-disable': 'off',
     },
   },
 
