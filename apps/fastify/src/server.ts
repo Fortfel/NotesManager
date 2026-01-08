@@ -71,7 +71,7 @@ export function createServer(): {
   })
 
   if (env.SERVER_API_PATH !== '/') {
-    server.get(env.SERVER_API_PATH, async (_request: FastifyRequest, reply: FastifyReply) => {
+    server.get(env.SERVER_API_PATH + '/', async (_request: FastifyRequest, reply: FastifyReply) => {
       return reply.redirect(env.CLIENT_URL)
       // return reply.send({ message: 'API is running!' })
     })
@@ -93,7 +93,7 @@ export function createServer(): {
       'Unhandled error',
     )
 
-    const statusCode = 'statusCode' in error ? Number(error.statusCode) : 500
+    const statusCode = error instanceof Error && 'statusCode' in error ? Number(error.statusCode) : 500
 
     // Send sanitized error to client
     if (isProduction) {
@@ -107,10 +107,12 @@ export function createServer(): {
       reply.status(statusCode).send({
         error: {
           statusCode,
-          ...(error.name ? { name: error.name } : {}),
-          ...(error.message ? { message: error.message } : { message: 'Internal server error' }),
-          ...(error.cause ? { cause: error.cause } : {}),
-          ...(error.stack ? { stack: error.stack } : {}),
+          ...(error instanceof Error && error.name ? { name: error.name } : {}),
+          ...(error instanceof Error && error.message
+            ? { message: error.message }
+            : { message: 'Internal server error' }),
+          ...(error instanceof Error && error.cause ? { cause: error.cause } : {}),
+          ...(error instanceof Error && error.stack ? { stack: error.stack } : {}),
         },
       })
     }
