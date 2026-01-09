@@ -2,7 +2,6 @@ import crypto from 'node:crypto'
 import { reset, seed } from 'drizzle-seed'
 
 import { env } from '../../../../apps/fastify/src/env'
-import { initAuth } from '../../../auth/src/server'
 import { createDatabase } from '../client'
 import * as schema from '../schema'
 import { account as accountTable, user as userTable } from '../schemas/auth'
@@ -12,19 +11,6 @@ import { initUsersData, messages } from './initial-users-data'
 const main = async (): Promise<void> => {
   const db = createDatabase({
     url: env.DATABASE_URL,
-  })
-
-  // Initialize auth instance (same as in Fastify server)
-  const auth = initAuth({
-    db,
-    webUrl: env.CLIENT_URL,
-    serverUrl: env.SERVER_URL,
-    apiPath: env.SERVER_API_PATH,
-    authSecret: env.AUTH_SECRET,
-    googleClientId: env.AUTH_GOOGLE_CLIENT_ID,
-    googleClientSecret: env.AUTH_GOOGLE_CLIENT_SECRET,
-    discordClientId: env.AUTH_DISCORD_CLIENT_ID,
-    discordClientSecret: env.AUTH_DISCORD_CLIENT_SECRET,
   })
 
   console.log('🌱 Starting database seeding...')
@@ -70,7 +56,7 @@ const main = async (): Promise<void> => {
           providerId: funcs.valuesFromArray({ values: ['credential'] }),
           password: funcs.valuesFromArray({
             values: [
-              '035f373274a799f11bae5745fbeefc73:214c6c33b8dcb6ed279c35b8c8ad4ee2c5dcd0798a434616ab124f0c25ee1707b550ce0817154def9c3279bfac566d2d08c635766d41004a502ee745a644c923',
+              '50a7cca404e858850b673d68495596f3:5cf3da3a312c0d801cf09dbbfcb2eb14bb578d02b31d8c7ec08a7f4bc86212d87c33b1549dc4610d19c2405db9a40d571ba7471da912efa847e8dadbb2c1fa02',
             ], // hashed version. non-hashed is "securePassword"
           }),
         },
@@ -103,13 +89,28 @@ const main = async (): Promise<void> => {
     // Add test account using Better Auth's signUpEmail
     console.log('🔧 Adding test account...')
     try {
-      const testUser = await auth.api.signUpEmail({
-        body: {
-          name: 'Demo User',
-          email: 'demo@example.com',
-          password: 'secretPassword',
-          image: initUsersData[0]?.image,
-        },
+      const testUserId = crypto.randomUUID()
+      const testAccountId = crypto.randomUUID()
+
+      // Insert user directly
+      await db.insert(userTable).values({
+        id: testUserId,
+        name: 'Demo User',
+        email: 'demo@example.com',
+        emailVerified: false,
+        image: initUsersData[0]?.image || '',
+      })
+
+      // Insert account with hashed password
+      await db.insert(accountTable).values({
+        id: testAccountId,
+        userId: testUserId,
+        accountId: testUserId,
+        providerId: 'credential',
+        password:
+          '50a7cca404e858850b673d68495596f3:5cf3da3a312c0d801cf09dbbfcb2eb14bb578d02b31d8c7ec08a7f4bc86212d87c33b1549dc4610d19c2405db9a40d571ba7471da912efa847e8dadbb2c1fa02', // "securePassword"
+        createdAt: new Date(),
+        updatedAt: new Date(),
       })
 
       // Add some pages for the test user
@@ -120,14 +121,14 @@ const main = async (): Promise<void> => {
         slug: 'demo-page',
         title: 'Demo Page',
         cover: '',
-        userId: testUser.user.id,
+        userId: testUserId,
       })
       await db.insert(pageTable).values({
         id: pageId2,
         slug: 'demo-page2',
         title: 'Demo Page2',
         cover: '',
-        userId: testUser.user.id,
+        userId: testUserId,
       })
 
       // Add some notes for the test user
