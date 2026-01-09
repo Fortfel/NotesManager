@@ -35,23 +35,9 @@ const fieldSchema = {
 }
 
 export const authSchema = {
-  registerSchema: z
-    .object({
-      name: fieldSchema.nameSchema,
-      email: fieldSchema.emailSchema,
-      password: fieldSchema.passwordSchema,
-      confirmPassword: z.string(),
-    })
-    .refine((data) => data.password === data.confirmPassword, {
-      message: 'Passwords do not match',
-      path: ['confirmPassword'],
-    }),
   loginSchema: z.object({
     email: fieldSchema.emailSchema,
     password: fieldSchema.passwordSchema,
-  }),
-  resetPasswordSchema: z.object({
-    email: fieldSchema.emailSchema,
   }),
 }
 
@@ -107,6 +93,16 @@ export const initAuth = (options: AuthConfig) => {
         trustedProviders: ['google', 'discord', 'email-password'],
         allowDifferentEmails: false,
         updateUserInfoOnLink: true,
+      },
+    },
+
+    // Required for cross-origin (frontend on github-pages, backend somewhere else)
+    advanced: {
+      useSecureCookies: true,
+      defaultCookieAttributes: {
+        sameSite: 'none', // Required for cross-origin
+        secure: true,
+        httpOnly: true,
       },
     },
 
