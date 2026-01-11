@@ -10,6 +10,10 @@
     "./server": {
       "types": "./dist/server/index.d.ts",
       "default": "./src/server/index.ts"
+    },
+    "./config": {
+      "types": "./dist/config.d.ts",
+      "default": "./src/config.ts"
     }
   },
   "scripts": {

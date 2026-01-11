@@ -2,6 +2,7 @@ import type * as React from 'react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { createFileRoute, Link, useNavigate } from '@tanstack/react-router'
 import { AlertCircleIcon, MoreVerticalIcon, PlusIcon, Trash2Icon } from 'lucide-react'
+import { toast } from 'sonner'
 
 import { Alert, AlertDescription, AlertTitle } from '@workspace/ui/components/alert'
 import { Button } from '@workspace/ui/components/button'
@@ -15,6 +16,7 @@ import {
 import { Item, ItemActions, ItemContent, ItemDescription, ItemTitle } from '@workspace/ui/components/item'
 import { CircleSpinner } from '@workspace/ui/components/spinner'
 
+import { DEMO_USER } from '@/config'
 import { authClient } from '@/lib/auth-client'
 import { trpcClient } from '@/lib/trpc-client'
 import { pageLinkOptions } from '@/routes/_app/-validations/app-link-options'
@@ -49,8 +51,6 @@ function HomeComponent(): React.JSX.Element {
   const queryClient = useQueryClient()
   const navigate = useNavigate()
 
-  const isTestUser = session?.user.email === 'demo@example.com'
-
   const pagesQuery = useQuery({
     ...trpcClient.notes.all.queryOptions({ limit: 20, offset: 0 }),
     enabled: !!session?.user, // Only fetch if user is authenticated
@@ -63,6 +63,9 @@ function HomeComponent(): React.JSX.Element {
       void queryClient.invalidateQueries({ queryKey: [['notes', 'all']] })
       void navigate({ ...pageLinkOptions(data.id) })
     },
+    onError: (error) => {
+      toast.error(error.message)
+    },
   })
 
   const deletePageMutation = useMutation({
@@ -70,13 +73,12 @@ function HomeComponent(): React.JSX.Element {
     onSuccess: () => {
       void queryClient.invalidateQueries({ queryKey: [['notes', 'all']] })
     },
+    onError: (error) => {
+      toast.error(error.message)
+    },
   })
 
   const handleCreatePage = () => {
-    if (isTestUser) {
-      alert('You are not allowed to create pages as a test user')
-      return
-    }
     const pageId = crypto.randomUUID()
     createPageMutation.mutate({
       page: {
@@ -92,10 +94,6 @@ function HomeComponent(): React.JSX.Element {
     e.preventDefault()
     e.stopPropagation()
 
-    if (isTestUser) {
-      alert('You are not allowed to delete pages as a test user')
-      return
-    }
     if (confirm('Are you sure you want to delete this page?')) {
       deletePageMutation.mutate(pageId)
     }
@@ -118,7 +116,7 @@ function HomeComponent(): React.JSX.Element {
           <AlertTitle>Test credentials:</AlertTitle>
           <AlertDescription>
             <span>
-              <strong>demo@example.com</strong> / <strong>secretPassword</strong>
+              <strong>{DEMO_USER.email}</strong> / <strong>{DEMO_USER.password}</strong>
             </span>
           </AlertDescription>
         </Alert>

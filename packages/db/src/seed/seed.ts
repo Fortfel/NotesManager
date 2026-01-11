@@ -86,8 +86,13 @@ const main = async (): Promise<void> => {
       },
     }))
 
-    // Add test account using Better Auth's signUpEmail
-    console.log('🔧 Adding test account...')
+    // Add demo account with showcase pages
+    // Keep in sync with DEMO_USER in @workspace/api/config
+    const DEMO_USER_EMAIL = 'demo@example.com'
+    const DEMO_USER_HASHED_PASSWORD =
+      '50a7cca404e858850b673d68495596f3:5cf3da3a312c0d801cf09dbbfcb2eb14bb578d02b31d8c7ec08a7f4bc86212d87c33b1549dc4610d19c2405db9a40d571ba7471da912efa847e8dadbb2c1fa02' // securePassword
+
+    console.log('🔧 Adding demo account...')
     try {
       const testUserId = crypto.randomUUID()
       const testAccountId = crypto.randomUUID()
@@ -96,7 +101,7 @@ const main = async (): Promise<void> => {
       await db.insert(userTable).values({
         id: testUserId,
         name: 'Demo User',
-        email: 'demo@example.com',
+        email: DEMO_USER_EMAIL,
         emailVerified: false,
         image: initUsersData[0]?.image || '',
       })
@@ -107,56 +112,119 @@ const main = async (): Promise<void> => {
         userId: testUserId,
         accountId: testUserId,
         providerId: 'credential',
-        password:
-          '50a7cca404e858850b673d68495596f3:5cf3da3a312c0d801cf09dbbfcb2eb14bb578d02b31d8c7ec08a7f4bc86212d87c33b1549dc4610d19c2405db9a40d571ba7471da912efa847e8dadbb2c1fa02', // "securePassword"
+        password: DEMO_USER_HASHED_PASSWORD,
         createdAt: new Date(),
         updatedAt: new Date(),
       })
 
-      // Add some pages for the test user
-      const pageId = crypto.randomUUID()
-      const pageId2 = crypto.randomUUID()
+      // Protected page slugs - keep in sync with DEMO_USER in @workspace/api/config
+      const PROTECTED_PAGE_SLUGS = ['welcome-to-notes-manager', 'getting-started'] as const
+      const welcomePageId = crypto.randomUUID()
+      const gettingStartedPageId = crypto.randomUUID()
+
+      // Page 1: Welcome to Notes Manager (protected)
       await db.insert(pageTable).values({
-        id: pageId,
-        slug: 'demo-page',
-        title: 'Demo Page',
-        cover: '',
-        userId: testUserId,
-      })
-      await db.insert(pageTable).values({
-        id: pageId2,
-        slug: 'demo-page2',
-        title: 'Demo Page2',
+        id: welcomePageId,
+        slug: PROTECTED_PAGE_SLUGS[0],
+        title: 'Welcome to Notes Manager',
         cover: '',
         userId: testUserId,
       })
 
-      // Add some notes for the test user
-      await db.insert(nodeTable).values({
-        id: crypto.randomUUID(),
-        type: 'text',
-        value: 'This is a demo note from the test account.',
-        order: 0,
-        pageId: pageId,
-      })
-      await db.insert(nodeTable).values({
-        id: crypto.randomUUID(),
-        type: 'text',
-        value: 'This is a demo note2 from the test account.',
-        order: 0,
-        pageId: pageId2,
-      })
-      await db.insert(nodeTable).values({
-        id: crypto.randomUUID(),
-        type: 'text',
-        value: 'This is a demo note3 from the test account.',
-        order: 1,
-        pageId: pageId2,
+      // Page 2: Getting Started (protected, with link to page 1)
+      await db.insert(pageTable).values({
+        id: gettingStartedPageId,
+        slug: PROTECTED_PAGE_SLUGS[1],
+        title: 'Getting Started',
+        cover: '',
+        userId: testUserId,
       })
 
-      console.log('✅ Test account created successfully')
+      // Nodes for Welcome page
+      const welcomeNodes = [
+        { type: 'heading1' as const, value: 'Welcome to Notes Manager!' },
+        {
+          type: 'text' as const,
+          value:
+            'This is a simple note-taking application built with modern web technologies. Feel free to explore and create your own pages!',
+        },
+        { type: 'heading2' as const, value: 'Features' },
+        { type: 'list' as const, value: 'Create and organize pages with rich content' },
+        { type: 'list' as const, value: 'Support for headings, text, and lists' },
+        { type: 'list' as const, value: 'Link between pages using the page node type' },
+        { type: 'list' as const, value: 'Auto-saving as you type' },
+        { type: 'list' as const, value: 'Clean and modern interface' },
+        { type: 'heading2' as const, value: 'Demo Account Limitations' },
+        { type: 'text' as const, value: 'As a demo user, you can:' },
+        { type: 'list' as const, value: 'Create up to 10 pages total' },
+        { type: 'list' as const, value: 'Edit and delete pages you create' },
+        {
+          type: 'text' as const,
+          value: 'Note: The first two example pages (this one and "Getting Started") cannot be modified or deleted.',
+        },
+        { type: 'heading2' as const, value: 'Get Started' },
+        {
+          type: 'text' as const,
+          value: 'Check out the Getting Started guide to learn how to use the app (double click):',
+        },
+        { type: 'page' as const, value: gettingStartedPageId },
+      ]
+
+      for (const [i, nodeData] of welcomeNodes.entries()) {
+        await db.insert(nodeTable).values({
+          id: crypto.randomUUID(),
+          type: nodeData.type,
+          value: nodeData.value,
+          order: i,
+          pageId: welcomePageId,
+        })
+      }
+
+      // Nodes for Getting Started page
+      const gettingStartedNodes = [
+        { type: 'heading1' as const, value: 'Getting Started Guide' },
+        { type: 'text' as const, value: 'This guide will help you get started with Notes Manager.' },
+        { type: 'heading2' as const, value: 'Creating a New Page' },
+        { type: 'list' as const, value: 'Click the "New Page" button in the sidebar' },
+        { type: 'list' as const, value: 'Give your page a title' },
+        { type: 'list' as const, value: 'Start adding content!' },
+        { type: 'heading2' as const, value: 'Adding Content' },
+        { type: 'text' as const, value: 'You can add different types of content blocks:' },
+        { type: 'heading3' as const, value: 'Text Blocks' },
+        { type: 'text' as const, value: 'Regular paragraphs for your notes and thoughts.' },
+        { type: 'heading3' as const, value: 'Headings' },
+        { type: 'text' as const, value: 'Use H1, H2, and H3 headings to organize your content hierarchically.' },
+        { type: 'heading3' as const, value: 'Lists' },
+        { type: 'text' as const, value: 'Create bullet lists to organize information:' },
+        { type: 'list' as const, value: 'First item' },
+        { type: 'list' as const, value: 'Second item' },
+        { type: 'list' as const, value: 'Third item' },
+        { type: 'heading3' as const, value: 'Page Links' },
+        {
+          type: 'text' as const,
+          value: 'Link to other pages in your workspace. Here is a link back to the welcome page (double click):',
+        },
+        { type: 'page' as const, value: welcomePageId },
+        { type: 'heading2' as const, value: 'Tips' },
+        { type: 'list' as const, value: 'Your changes are saved automatically' },
+        { type: 'list' as const, value: 'Use headings to structure long documents' },
+        { type: 'list' as const, value: 'Link related pages together for easy navigation' },
+        { type: 'text' as const, value: 'Happy note-taking!' },
+      ]
+
+      for (const [i, nodeData] of gettingStartedNodes.entries()) {
+        await db.insert(nodeTable).values({
+          id: crypto.randomUUID(),
+          type: nodeData.type,
+          value: nodeData.value,
+          order: i,
+          pageId: gettingStartedPageId,
+        })
+      }
+
+      console.log('✅ Demo account created successfully')
     } catch (error) {
-      console.log('⚠️  Test account might already exist or creation failed:', error)
+      console.log('⚠️  Demo account might already exist or creation failed:', error)
     }
 
     console.log('🎉 Database seeding completed successfully!')

@@ -1,9 +1,11 @@
 import type { TRPCRouterRecord } from '@trpc/server'
+import { TRPCError } from '@trpc/server'
 import { z } from 'zod/v4'
 
-import { and, asc, desc, eq } from '@workspace/db'
+import { and, asc, count, desc, eq } from '@workspace/db'
 import { node, nodeInsertSchema, page, pageInsertSchema } from '@workspace/db/schema'
 
+import { DEMO_USER } from '../../config'
 import { protectedProcedure, publicProcedure } from '../trpc'
 
 export const noteRouter = {
@@ -62,6 +64,21 @@ export const noteRouter = {
       }),
     )
     .mutation(async ({ ctx, input }) => {
+      // Check demo user page limit
+      if (ctx.session.user.email === DEMO_USER.email) {
+        const [result] = await ctx.db
+          .select({ count: count() })
+          .from(page)
+          .where(eq(page.userId, ctx.session.session.userId))
+
+        if (result && result.count >= DEMO_USER.maxPages) {
+          throw new TRPCError({
+            code: 'FORBIDDEN',
+            message: `Demo account is limited to ${DEMO_USER.maxPages.toString()} pages. Delete some pages to create new ones.`,
+          })
+        }
+      }
+
       // Insert the page
       await ctx.db.insert(page).values({
         ...input.page,
@@ -91,7 +108,21 @@ export const noteRouter = {
         cover: z.string().optional(),
       }),
     )
-    .mutation(({ ctx, input }) => {
+    .mutation(async ({ ctx, input }) => {
+      // Check if demo user is trying to update protected pages
+      if (ctx.session.user.email === DEMO_USER.email) {
+        const targetPage = await ctx.db.query.page.findFirst({
+          where: and(eq(page.id, input.id), eq(page.userId, ctx.session.session.userId)),
+        })
+
+        if (targetPage && DEMO_USER.protectedPageSlugs.has(targetPage.slug)) {
+          throw new TRPCError({
+            code: 'FORBIDDEN',
+            message: 'Demo account cannot modify the example pages. Create your own pages to edit them.',
+          })
+        }
+      }
+
       const { id, ...updates } = input
       return ctx.db
         .update(page)
@@ -100,7 +131,21 @@ export const noteRouter = {
     }),
 
   // Delete a page (cascades to nodes)
-  delete: protectedProcedure.input(z.uuid()).mutation(({ ctx, input }) => {
+  delete: protectedProcedure.input(z.uuid()).mutation(async ({ ctx, input }) => {
+    // Check if demo user is trying to delete protected pages
+    if (ctx.session.user.email === DEMO_USER.email) {
+      const targetPage = await ctx.db.query.page.findFirst({
+        where: and(eq(page.id, input), eq(page.userId, ctx.session.session.userId)),
+      })
+
+      if (targetPage && DEMO_USER.protectedPageSlugs.has(targetPage.slug)) {
+        throw new TRPCError({
+          code: 'FORBIDDEN',
+          message: 'Demo account cannot delete the example pages.',
+        })
+      }
+    }
+
     return ctx.db.delete(page).where(and(eq(page.id, input), eq(page.userId, ctx.session.session.userId)))
   }),
 
@@ -119,7 +164,18 @@ export const noteRouter = {
       })
 
       if (!pageExists) {
-        throw new Error('Page not found')
+        throw new TRPCError({
+          code: 'NOT_FOUND',
+          message: 'Page not found',
+        })
+      }
+
+      // Check if demo user is trying to update protected pages
+      if (ctx.session.user.email === DEMO_USER.email && DEMO_USER.protectedPageSlugs.has(pageExists.slug)) {
+        throw new TRPCError({
+          code: 'FORBIDDEN',
+          message: 'Demo account cannot modify the example pages. Create your own pages to edit them.',
+        })
       }
 
       // Delete existing nodes

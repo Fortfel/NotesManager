@@ -27,3 +27,5 @@ export const config = {
   // when changing, also change in index.html
   themeStorageKey: 'app-theme',
 } as const satisfies Config
+
+export { DEMO_USER } from '@workspace/api/config'

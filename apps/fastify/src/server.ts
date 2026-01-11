@@ -24,10 +24,6 @@ const auth = initAuth({
   serverUrl: env.SERVER_URL,
   apiPath: env.SERVER_API_PATH,
   authSecret: env.AUTH_SECRET,
-  googleClientId: env.AUTH_GOOGLE_CLIENT_ID,
-  googleClientSecret: env.AUTH_GOOGLE_CLIENT_SECRET,
-  discordClientId: env.AUTH_DISCORD_CLIENT_ID,
-  discordClientSecret: env.AUTH_DISCORD_CLIENT_SECRET,
 })
 
 export function createServer(): {

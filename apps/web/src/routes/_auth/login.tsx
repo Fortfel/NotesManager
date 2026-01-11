@@ -6,12 +6,12 @@ import { toast } from 'sonner'
 import { Alert, AlertDescription, AlertTitle } from '@workspace/ui/components/alert'
 import { Button } from '@workspace/ui/components/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@workspace/ui/components/card'
-import { Field, FieldDescription, FieldGroup, FieldSeparator } from '@workspace/ui/components/field'
+import { FieldDescription, FieldGroup } from '@workspace/ui/components/field'
 
+import { DEMO_USER } from '@/config'
 import { useAuthFormStore } from '@/hooks/use-auth-form-store'
 import { homeLinkOptions } from '@/routes/_app/-validations/app-link-options'
 import { LoginForm } from '@/routes/_auth/-components/login-form'
-import { SocialAuth } from '@/routes/_auth/-components/social-auth'
 import { Logo } from '@/routes/-components/logo'
 
 export const Route = createFileRoute('/_auth/login')({
@@ -51,7 +51,7 @@ function RouteComponent() {
               <AlertTitle>Test credentials:</AlertTitle>
               <AlertDescription>
                 <span>
-                  <strong>demo@example.com</strong> / <strong>secretPassword</strong>
+                  <strong>{DEMO_USER.email}</strong> / <strong>{DEMO_USER.password}</strong>
                 </span>
               </AlertDescription>
             </Alert>
@@ -65,20 +65,13 @@ function RouteComponent() {
           </CardHeader>
           <CardContent>
             <FieldGroup>
-              <Field>
-                <SocialAuth provider="google" label={'Login with Google'} redirectUrl={search.redirect} />
-                <SocialAuth provider="discord" label={'Login with Discord'} redirectUrl={search.redirect} />
-              </Field>
-              <FieldSeparator className="*:data-[slot=field-separator-content]:bg-card">
-                Or continue with
-              </FieldSeparator>
               <LoginForm onSuccess={onSuccessCallback} />
             </FieldGroup>
           </CardContent>
         </Card>
         <FieldDescription className="px-6 text-center">
-          By clicking Login or signing in through a third party, you agree to our <Link to={'.'}>Terms of Service</Link>{' '}
-          and <Link to={'.'}>Privacy Policy</Link>.
+          By clicking Login, you agree to our <Link to={'.'}>Terms of Service</Link> and{' '}
+          <Link to={'.'}>Privacy Policy</Link>.
         </FieldDescription>
         <Button asChild variant="outline-ghost" className={'mr-auto'}>
           <Link {...homeLinkOptions()}>

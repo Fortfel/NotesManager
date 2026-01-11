@@ -30,11 +30,15 @@ const baseEnv = createEnv({
       .default('/api'),
 
     // Frontend
-    CLIENT_URL: z.url({
-      protocol: /^https?$/,
-      hostname: z.regexes.hostname,
-      error: 'Invalid client URL',
-    }),
+    CLIENT_URL: z
+      .url({
+        protocol: /^https?$/,
+        hostname: z.regexes.hostname,
+        error: 'Invalid client URL',
+      })
+      .refine((val) => !val.endsWith('/'), {
+        message: 'Client URL must not end with "/"',
+      }),
 
     // Database
     DATABASE_URL: z.url('Invalid database URL'),

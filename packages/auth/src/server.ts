@@ -49,10 +49,6 @@ type AuthConfig = {
   db: DatabaseInstance
 
   authSecret: string
-  googleClientId: string
-  googleClientSecret: string
-  discordClientId: string
-  discordClientSecret: string
 }
 
 /**
@@ -86,17 +82,7 @@ export const initAuth = (options: AuthConfig) => {
       },
     },
 
-    account: {
-      encryptOAuthTokens: true,
-      accountLinking: {
-        enabled: true,
-        trustedProviders: ['google', 'discord', 'email-password'],
-        allowDifferentEmails: false,
-        updateUserInfoOnLink: true,
-      },
-    },
-
-    // Required for cross-origin (frontend on github-pages, backend somewhere else)
+    // Required for cross-origin (frontend on github-pages, backend somewhere else). OAuth still won't work though.
     advanced: {
       useSecureCookies: true,
       defaultCookieAttributes: {
@@ -124,21 +110,6 @@ export const initAuth = (options: AuthConfig) => {
       minPasswordLength: AUTH_CONFIG.PASSWORD_MIN_LENGTH,
       maxPasswordLength: AUTH_CONFIG.PASSWORD_MAX_LENGTH,
       disableSignUp: true,
-    },
-
-    socialProviders: {
-      google: {
-        clientId: options.googleClientId,
-        clientSecret: options.googleClientSecret,
-        redirectURI: urlJoin(options.serverUrl, options.apiPath, 'auth/callback/google'),
-        overrideUserInfoOnSignIn: true,
-      },
-      discord: {
-        clientId: options.discordClientId,
-        clientSecret: options.discordClientSecret,
-        redirectURI: urlJoin(options.serverUrl, options.apiPath, 'auth/callback/discord'),
-        overrideUserInfoOnSignIn: true,
-      },
     },
 
     onAPIError: {
@@ -184,4 +155,3 @@ export const initAuth = (options: AuthConfig) => {
 }
 
 export type AuthInstance = ReturnType<typeof initAuth>
-export type SocialProviders = keyof AuthInstance['options']['socialProviders']
